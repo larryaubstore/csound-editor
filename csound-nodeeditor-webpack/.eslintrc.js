@@ -21,6 +21,10 @@ module.exports = {
   ],
   // add your custom rules here
   rules: {
+    'semi': 'off',
+    'space-before-function-paren': 'off',
+    'no-multi-spaces': 'off',
+    'space-before-blocks': 'off',
     // allow async-await
     'generator-star-spacing': 'off',
     // allow debugger during development

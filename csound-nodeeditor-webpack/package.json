@@ -11,6 +11,9 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "rete-area-plugin": "^0.2.0",
+    "rete-comment-plugin": "^0.2.0",
+    "rete-context-menu-plugin": "^0.3.1",
     "vue": "^2.5.2"
   },
   "devDependencies": {
