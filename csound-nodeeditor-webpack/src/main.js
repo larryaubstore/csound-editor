@@ -9,85 +9,16 @@ import ContextMenuPlugin  from 'rete-context-menu-plugin';
 import AreaPlugin         from 'rete-area-plugin';
 import CommentPlugin      from 'rete-comment-plugin';
 
+import * as d3            from 'd3';
+import { NumComponent }   from './components/nodeEditor/numComponent';
+import { NumControl }     from './components/nodeEditor/numControl';
 const numSocket = new Rete.Socket('Number value');
-class NumComponent extends Rete.Component {
-    constructor(){
-        super('Number');
-    }
-
-    builder(node) {
-        let out = new Rete.Output('Number', numSocket);
-
-        node.addOutput(out);
-    }
-
-    worker(node, inputs, outputs){
-        outputs[0] = node.data.num;
-    }
-}
 
 Vue.config.productionTip = false
 
-// new Vue({
-//   render: h => h(App),
-// }).$mount('#app')
-//
 var instance = new Vue({
   render: h => h(NodeEditor),
   mounted: function () {
-    var numSocket = new Rete.Socket('Number value');
-
-    var VueNumControl = {
-      props: ['readonly', 'emitter', 'ikey', 'getData', 'putData'],
-      template: '<input type="number" :readonly="readonly" :value="value" @input="change($event)" @dblclick.stop=""/>',
-      data() {
-        return {
-          value: 0
-        }
-      },
-      methods: {
-        change(e){
-          this.value = +e.target.value;
-          this.update();
-        },
-        update() {
-          if (this.ikey) this.putData(this.ikey, this.value);
-          this.emitter.trigger('process');
-        }
-      },
-      mounted() {
-        this.value = this.getData(this.ikey);
-      }
-    }
-
-    class NumControl extends Rete.Control {
-      constructor(emitter, key, readonly) {
-        super(key);
-        this.component = VueNumControl;
-        this.props = { emitter, ikey: key, readonly };
-      }
-
-      setValue(val) {
-        this.vueContext.value = val;
-      }
-    }
-
-    class NumComponent extends Rete.Component {
-        constructor(){
-            super("Number");
-        }
-
-        builder(node) {
-            var out1 = new Rete.Output('num', "Number", numSocket);
-
-            return node.addControl(new NumControl(this.editor, 'num')).addOutput(out1);
-        }
-
-        worker(node, inputs, outputs) {
-            outputs['num'] = node.data.num;
-        }
-    }
-
     class AddComponent extends Rete.Component {
         constructor(){
             super("Add");
@@ -120,7 +51,7 @@ var instance = new Vue({
 
     (async () => {
         var container = document.querySelector('#rete');
-        var components = [new NumComponent(), new AddComponent()];
+        var components = [new NumComponent(numSocket), new AddComponent()];
 
         var editor = new Rete.NodeEditor('demo@0.1.0', container);
         editor.use(ConnectionPlugin);

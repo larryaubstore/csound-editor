@@ -5,12 +5,12 @@
 <script>
 
 export default {
-  name: 'NodeEditor',
-  methods: {
-    load: function () {
+    name: 'NodeEditor',
+    methods: {
+        load: function () {
 
+        }
     }
-  }
 }
 
 </script>
