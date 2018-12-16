@@ -1,9 +1,11 @@
 <template>
-
-    <div class="linen-container" />
+    <div class="linen-container">
+        <circle-slider style="position: absolute" v-model="sliderValue"></circle-slider>
+    </div>
 </template>
 
 <style>
+
     svg {
       background-color: #FFF;
       cursor: default;
@@ -71,6 +73,15 @@ export default {
     name: 'Linen',
     mounted: function () {
         draw();
+    },
+    data: function () {
+        return {
+            sliderValue: 75
+        };
+    },
+    watch: {
+        sliderValue: function(newValue, oldValue) {
+        }
     }
 }
 

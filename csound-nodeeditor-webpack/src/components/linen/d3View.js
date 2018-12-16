@@ -2,7 +2,6 @@
 import * as d3      from 'd3';
 
 function draw() {
-    debugger;
     // set up SVG for D3
     const width = 960;
     const height = 500;
