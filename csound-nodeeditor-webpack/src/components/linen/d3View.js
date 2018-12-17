@@ -1,109 +1,167 @@
 /* eslint-disable indent */
 import * as d3      from 'd3';
 
-function draw() {
-    // set up SVG for D3
-    const width = 960;
-    const height = 500;
-    const colors = d3.scaleOrdinal(d3.schemeCategory10);
+export class LinenNode {
+    constructor() {
+        this.path = null;
+        this.links = null;
+        this.selectedNode = null;
+        this.selectedLink = null;
+        this.mousedownLink = null;
+        this.mousedownNode = null;
+        this.mouseupNode = null;
+        this.circle = null;
+        this.nodes = null;
+        this.colors = null;
+        this.dragLine = null;
+        this.force = null;
+        this.svg = null;
+        // only respond once per keydown
+        this.lastKeyDown = -1;
+        this.drag = null;
+    }
 
-    const svg = d3.select('.linen-container')
-      .append('svg')
-      .attr('oncontextmenu', 'return false;')
-      .attr('width', width)
-      .attr('height', height);
+    resetMouseVars() {
+        this.mousedownNode = null;
+        this.mouseupNode = null;
+        this.mousedownLink = null;
+    }
 
-    // set up initial nodes and links
-    //  - nodes are known by 'id', not by index in array.
-    //  - reflexive edges are indicated on the node (as a bold black circle).
-    //  - links are always source < target; edge directions are set by 'left' and 'right'.
-    const nodes = [
-      { id: 0, reflexive: false },
-      { id: 1, reflexive: true },
-      { id: 2, reflexive: false }
-    ];
-    let lastNodeId = 2;
-    const links = [
-      { source: nodes[0], target: nodes[1], left: false, right: true },
-      { source: nodes[1], target: nodes[2], left: false, right: true }
-    ];
+    // update graph (called when needed)
+    restart() {
+        // path (link) group
+        this.path = this.path.data(this.links);
 
-    // init D3 force layout
-    const force = d3.forceSimulation()
-      .force('link', d3.forceLink().id((d) => d.id).distance(150))
-      .force('charge', d3.forceManyBody().strength(-500))
-      .force('x', d3.forceX(width / 2))
-      .force('y', d3.forceY(height / 2))
-      .on('tick', tick);
+        // update existing links
+        this.path.classed('selected', (d) => d === this.selectedLink)
+          .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : '')
+          .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : '');
 
-    // init D3 drag support
-    const drag = d3.drag()
-      .on('start', (d) => {
-        if (!d3.event.active) force.alphaTarget(0.3).restart();
+        // remove old links
+        this.path.exit().remove();
 
-        d.fx = d.x;
-        d.fy = d.y;
-      })
-      .on('drag', (d) => {
-        d.fx = d3.event.x;
-        d.fy = d3.event.y;
-      })
-      .on('end', (d) => {
-        if (!d3.event.active) force.alphaTarget(0);
+        // add new links
+        this.path = this.path.enter().append('svg:path')
+          .attr('class', 'link')
+          .classed('selected', (d) => d === this.selectedLink)
+          .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : '')
+          .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : '')
+          .on('mousedown', (d) => {
+            if (d3.event.ctrlKey) return;
 
-        d.fx = null;
-        d.fy = null;
-      });
+            // select link
+            this.mousedownLink = d;
+            this.selectedLink = (this.mousedownLink === this.selectedLink) ? null : this.mousedownLink;
+            this.selectedNode = null;
+            this.restart();
+          })
+          .merge(this.path);
 
-    // define arrow markers for graph links
-    svg.append('svg:defs').append('svg:marker')
-        .attr('id', 'end-arrow')
-        .attr('viewBox', '0 -5 10 10')
-        .attr('refX', 6)
-        .attr('markerWidth', 3)
-        .attr('markerHeight', 3)
-        .attr('orient', 'auto')
-      .append('svg:path')
-        .attr('d', 'M0,-5L10,0L0,5')
-        .attr('fill', '#000');
+        // circle (node) group
+        // NB: the function arg is crucial here! nodes are known by id, not by index!
+        this.circle = this.circle.data(this.nodes, (d) => d.id);
 
-    svg.append('svg:defs').append('svg:marker')
-        .attr('id', 'start-arrow')
-        .attr('viewBox', '0 -5 10 10')
-        .attr('refX', 4)
-        .attr('markerWidth', 3)
-        .attr('markerHeight', 3)
-        .attr('orient', 'auto')
-      .append('svg:path')
-        .attr('d', 'M10,-5L0,0L10,5')
-        .attr('fill', '#000');
+        // update existing nodes (reflexive & selected visual states)
+        this.circle.selectAll('circle')
+          .style('fill', (d) => (d === this.selectedNode) ? d3.rgb(this.colors(d.id)).brighter().toString() : this.colors(d.id))
+          .classed('reflexive', (d) => d.reflexive);
 
-    // line displayed when dragging new nodes
-    const dragLine = svg.append('svg:path')
-      .attr('class', 'link dragline hidden')
-      .attr('d', 'M0,0L0,0');
+        // remove old nodes
+        this.circle.exit().remove();
 
-    // handles to link and node element groups
-    let path = svg.append('svg:g').selectAll('path');
-    let circle = svg.append('svg:g').selectAll('g');
+        // add new nodes
+        const g = this.circle.enter().append('svg:g');
 
-    // mouse event vars
-    let selectedNode = null;
-    let selectedLink = null;
-    let mousedownLink = null;
-    let mousedownNode = null;
-    let mouseupNode = null;
+        g.append('svg:circle')
+          .attr('class', 'node')
+          .attr('r', 12)
+          .style('fill', (d) => (d === this.selectedNode) ? d3.rgb(this.colors(d.id)).brighter().toString() : this.colors(d.id))
+          .style('stroke', (d) => d3.rgb(this.colors(d.id)).darker().toString())
+          .classed('reflexive', (d) => d.reflexive)
+          .on('mouseover', function (d) {
+            if (!this.mousedownNode || d === this.mousedownNode) return;
+            // enlarge target node
+            d3.select(this).attr('transform', 'scale(1.1)');
+          })
+          .on('mouseout', function (d) {
+            if (!this.mousedownNode || d === this.mousedownNode) return;
+            // unenlarge target node
+            d3.select(this).attr('transform', '');
+          })
+          .on('mousedown', (d) => {
+            if (d3.event.ctrlKey) return;
 
-    function resetMouseVars() {
-      mousedownNode = null;
-      mouseupNode = null;
-      mousedownLink = null;
+            // select node
+            this.mousedownNode = d;
+            this.selectedNode = (this.mousedownNode === this.selectedNode) ? null : this.mousedownNode;
+            this.selectedLink = null;
+
+            // reposition drag line
+            this.dragLine
+              .style('marker-end', 'url(#end-arrow)')
+              .classed('hidden', false)
+              .attr('d', `M${this.mousedownNode.x},${this.mousedownNode.y}L${this.mousedownNode.x},${this.mousedownNode.y}`);
+
+            this.restart();
+          })
+          .on('mouseup', function (d) {
+            if (!this.mousedownNode) return;
+
+            // needed by FF
+            this.dragLine
+              .classed('hidden', true)
+              .style('marker-end', '');
+
+            // check for drag-to-self
+            this.mouseupNode = d;
+            if (this.mouseupNode === this.mousedownNode) {
+              this.resetMouseVars();
+              return;
+            }
+
+            // unenlarge target node
+            d3.select(this).attr('transform', '');
+
+            // add link to graph (update if exists)
+            // NB: links are strictly source < target; arrows separately specified by booleans
+            const isRight = this.mousedownNode.id < this.mouseupNode.id;
+            const source = isRight ? this.mousedownNode : this.mouseupNode;
+            const target = isRight ? this.mouseupNode : this.mousedownNode;
+
+            const link = this.links.filter((l) => l.source === source && l.target === target)[0];
+            if (link) {
+              link[isRight ? 'right' : 'left'] = true;
+            } else {
+              this.links.push({ source, target, left: !isRight, right: isRight });
+            }
+
+            // select new link
+            this.selectedLink = link;
+            this.selectedNode = null;
+            this.restart();
+          });
+
+        // show node IDs
+        g.append('svg:text')
+          .attr('x', 0)
+          .attr('y', 4)
+          .attr('class', 'id')
+          .text((d) => d.id);
+
+        this.circle = g.merge(this.circle);
+
+        // set the graph in motion
+        this.force
+          .nodes(this.nodes)
+          .force('link').links(this.links);
+
+        this.force.alphaTarget(0.3).restart();
     }
 
     // update force layout (called automatically each iteration)
-    function tick() {
+    tick() {
       // draw directed edges with proper padding from node centers
-      path.attr('d', (d) => {
+      this.path.attr('d', (d) => {
         const deltaX = d.target.x - d.source.x;
         const deltaY = d.target.y - d.source.y;
         const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
@@ -119,263 +177,223 @@ function draw() {
         return `M${sourceX},${sourceY}L${targetX},${targetY}`;
       });
 
-      circle.attr('transform', (d) => `translate(${d.x},${d.y})`);
+      this.circle.attr('transform', (d) => `translate(${d.x},${d.y})`);
     }
 
-    // update graph (called when needed)
-    function restart() {
-      // path (link) group
-      path = path.data(links);
-
-      // update existing links
-      path.classed('selected', (d) => d === selectedLink)
-        .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : '')
-        .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : '');
-
-      // remove old links
-      path.exit().remove();
-
-      // add new links
-      path = path.enter().append('svg:path')
-        .attr('class', 'link')
-        .classed('selected', (d) => d === selectedLink)
-        .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : '')
-        .style('marker-end', (d) => d.right ? 'url(#end-arrow)' : '')
-        .on('mousedown', (d) => {
-          if (d3.event.ctrlKey) return;
-
-          // select link
-          mousedownLink = d;
-          selectedLink = (mousedownLink === selectedLink) ? null : mousedownLink;
-          selectedNode = null;
-          restart();
-        })
-        .merge(path);
-
-      // circle (node) group
-      // NB: the function arg is crucial here! nodes are known by id, not by index!
-      circle = circle.data(nodes, (d) => d.id);
-
-      // update existing nodes (reflexive & selected visual states)
-      circle.selectAll('circle')
-        .style('fill', (d) => (d === selectedNode) ? d3.rgb(colors(d.id)).brighter().toString() : colors(d.id))
-        .classed('reflexive', (d) => d.reflexive);
-
-      // remove old nodes
-      circle.exit().remove();
-
-      // add new nodes
-      const g = circle.enter().append('svg:g');
-
-      g.append('svg:circle')
-        .attr('class', 'node')
-        .attr('r', 12)
-        .style('fill', (d) => (d === selectedNode) ? d3.rgb(colors(d.id)).brighter().toString() : colors(d.id))
-        .style('stroke', (d) => d3.rgb(colors(d.id)).darker().toString())
-        .classed('reflexive', (d) => d.reflexive)
-        .on('mouseover', function (d) {
-          if (!mousedownNode || d === mousedownNode) return;
-          // enlarge target node
-          d3.select(this).attr('transform', 'scale(1.1)');
-        })
-        .on('mouseout', function (d) {
-          if (!mousedownNode || d === mousedownNode) return;
-          // unenlarge target node
-          d3.select(this).attr('transform', '');
-        })
-        .on('mousedown', (d) => {
-          if (d3.event.ctrlKey) return;
-
-          // select node
-          mousedownNode = d;
-          selectedNode = (mousedownNode === selectedNode) ? null : mousedownNode;
-          selectedLink = null;
-
-          // reposition drag line
-          dragLine
-            .style('marker-end', 'url(#end-arrow)')
-            .classed('hidden', false)
-            .attr('d', `M${mousedownNode.x},${mousedownNode.y}L${mousedownNode.x},${mousedownNode.y}`);
-
-          restart();
-        })
-        .on('mouseup', function (d) {
-          if (!mousedownNode) return;
-
-          // needed by FF
-          dragLine
-            .classed('hidden', true)
-            .style('marker-end', '');
-
-          // check for drag-to-self
-          mouseupNode = d;
-          if (mouseupNode === mousedownNode) {
-            resetMouseVars();
-            return;
-          }
-
-          // unenlarge target node
-          d3.select(this).attr('transform', '');
-
-          // add link to graph (update if exists)
-          // NB: links are strictly source < target; arrows separately specified by booleans
-          const isRight = mousedownNode.id < mouseupNode.id;
-          const source = isRight ? mousedownNode : mouseupNode;
-          const target = isRight ? mouseupNode : mousedownNode;
-
-          const link = links.filter((l) => l.source === source && l.target === target)[0];
-          if (link) {
-            link[isRight ? 'right' : 'left'] = true;
-          } else {
-            links.push({ source, target, left: !isRight, right: isRight });
-          }
-
-          // select new link
-          selectedLink = link;
-          selectedNode = null;
-          restart();
-        });
-
-      // show node IDs
-      g.append('svg:text')
-        .attr('x', 0)
-        .attr('y', 4)
-        .attr('class', 'id')
-        .text((d) => d.id);
-
-      circle = g.merge(circle);
-
-      // set the graph in motion
-      force
-        .nodes(nodes)
-        .force('link').links(links);
-
-      force.alphaTarget(0.3).restart();
-    }
-
-    function mousedown() {
+    mousedown(event) {
       // because :active only works in WebKit?
-      svg.classed('active', true);
+      this.svg.classed('active', true);
 
-      if (d3.event.ctrlKey || mousedownNode || mousedownLink) return;
+      if (d3.event.ctrlKey || this.mousedownNode || this.mousedownLink) return;
 
       // insert new node at point
-      const point = d3.mouse(this);
-      const node = { id: ++lastNodeId, reflexive: false, x: point[0], y: point[1] };
-      nodes.push(node);
+      const point = d3.mouse(event);
+      const node = { id: ++this.lastNodeId, reflexive: false, x: point[0], y: point[1] };
+      this.nodes.push(node);
 
-      restart();
+      this.restart();
     }
 
-    function mousemove() {
-      if (!mousedownNode) return;
+    mousemove() {
+      if (!this.mousedownNode) return;
 
       // update drag line
-      dragLine.attr('d', `M${mousedownNode.x},${mousedownNode.y}L${d3.mouse(this)[0]},${d3.mouse(this)[1]}`);
+      this.dragLine.attr('d', `M${this.mousedownNode.x},${this.mousedownNode.y}L${d3.mouse(this)[0]},${d3.mouse(this)[1]}`);
 
-      restart();
+      this.restart();
     }
 
-    function mouseup() {
-      if (mousedownNode) {
+    mouseup() {
+      if (this.mousedownNode) {
         // hide drag line
-        dragLine
+        this.dragLine
           .classed('hidden', true)
           .style('marker-end', '');
       }
 
       // because :active only works in WebKit?
-      svg.classed('active', false);
+      this.svg.classed('active', false);
 
       // clear mouse event vars
-      resetMouseVars();
+      this.resetMouseVars();
     }
 
-    function spliceLinksForNode(node) {
-      const toSplice = links.filter((l) => l.source === node || l.target === node);
-      for (const l of toSplice) {
-        links.splice(links.indexOf(l), 1);
-      }
-    }
-
-    // only respond once per keydown
-    let lastKeyDown = -1;
-
-    function keydown() {
-      d3.event.preventDefault();
-
-      if (lastKeyDown !== -1) return;
-      lastKeyDown = d3.event.keyCode;
+    keyup() {
+      this.lastKeyDown = -1;
 
       // ctrl
       if (d3.event.keyCode === 17) {
-        circle.call(drag);
-        svg.classed('ctrl', true);
+        this.circle.on('.drag', null);
+        this.svg.classed('ctrl', false);
+      }
+    }
+
+    keydown() {
+      d3.event.preventDefault();
+
+      if (this.lastKeyDown !== -1) return;
+      this.lastKeyDown = d3.event.keyCode;
+
+      // ctrl
+      if (d3.event.keyCode === 17) {
+        this.circle.call(this.drag);
+        this.svg.classed('ctrl', true);
       }
 
-      if (!selectedNode && !selectedLink) return;
+      if (!this.selectedNode && !this.selectedLink) return;
 
       switch (d3.event.keyCode) {
         case 8: // backspace
         case 46: // delete
-          if (selectedNode) {
-            nodes.splice(nodes.indexOf(selectedNode), 1);
-            spliceLinksForNode(selectedNode);
-          } else if (selectedLink) {
-            links.splice(links.indexOf(selectedLink), 1);
+          if (this.selectedNode) {
+            this.nodes.splice(this.nodes.indexOf(this.selectedNode), 1);
+            this.spliceLinksForNode(this.selectedNode);
+          } else if (this.selectedLink) {
+            this.links.splice(this.links.indexOf(this.selectedLink), 1);
           }
-          selectedLink = null;
-          selectedNode = null;
-          restart();
+          this.selectedLink = null;
+          this.selectedNode = null;
+          this.restart();
           break;
         case 66: // B
-          if (selectedLink) {
+          if (this.selectedLink) {
             // set link direction to both left and right
-            selectedLink.left = true;
-            selectedLink.right = true;
+            this.selectedLink.left = true;
+            this.selectedLink.right = true;
           }
-          restart();
+          this.restart();
           break;
         case 76: // L
-          if (selectedLink) {
+          if (this.selectedLink) {
             // set link direction to left only
-            selectedLink.left = true;
-            selectedLink.right = false;
+            this.selectedLink.left = true;
+            this.selectedLink.right = false;
           }
-          restart();
+          this.restart();
           break;
         case 82: // R
-          if (selectedNode) {
+          if (this.selectedNode) {
             // toggle node reflexivity
-            selectedNode.reflexive = !selectedNode.reflexive;
-          } else if (selectedLink) {
+            this.selectedNode.reflexive = !this.selectedNode.reflexive;
+          } else if (this.selectedLink) {
             // set link direction to right only
-            selectedLink.left = false;
-            selectedLink.right = true;
+            this.selectedLink.left = false;
+            this.selectedLink.right = true;
           }
-          restart();
+          this.restart();
           break;
       }
     }
 
-    function keyup() {
-      lastKeyDown = -1;
-
-      // ctrl
-      if (d3.event.keyCode === 17) {
-        circle.on('.drag', null);
-        svg.classed('ctrl', false);
+    spliceLinksForNode(node) {
+      const toSplice = this.links.filter((l) => l.source === node || l.target === node);
+      for (const l of toSplice) {
+        this.links.splice(this.links.indexOf(l), 1);
       }
     }
 
-    // app starts here
-    svg.on('mousedown', mousedown)
-      .on('mousemove', mousemove)
-      .on('mouseup', mouseup);
-    d3.select(window)
-      .on('keydown', keydown)
-      .on('keyup', keyup);
-    restart();
-}
+    draw() {
+        // set up SVG for D3
+        const width = 960;
+        const height = 500;
+        this.colors = d3.scaleOrdinal(d3.schemeCategory10);
 
-export default draw;
+        this.svg = d3.select('.linen-container')
+          .append('svg')
+          .attr('oncontextmenu', 'return false;')
+          .attr('width', width)
+          .attr('height', height);
+
+        // set up initial nodes and links
+        //  - nodes are known by 'id', not by index in array.
+        //  - reflexive edges are indicated on the node (as a bold black circle).
+        //  - links are always source < target; edge directions are set by 'left' and 'right'.
+        this.nodes = [
+          { id: 0, reflexive: false },
+          { id: 1, reflexive: true },
+          { id: 2, reflexive: false }
+        ];
+        this.lastNodeId = 2;
+        this.links = [
+          { source: this.nodes[0], target: this.nodes[1], left: false, right: true },
+          { source: this.nodes[1], target: this.nodes[2], left: false, right: true }
+        ];
+
+        // init D3 force layout
+        this.force = d3.forceSimulation()
+          .force('link', d3.forceLink().id((d) => d.id).distance(150))
+          .force('charge', d3.forceManyBody().strength(-500))
+          .force('x', d3.forceX(width / 2))
+          .force('y', d3.forceY(height / 2))
+          .on('tick', this.tick.bind(this));
+
+        // init D3 drag support
+        this.drag = d3.drag()
+          .on('start', (d) => {
+            if (!d3.event.active) this.force.alphaTarget(0.3).restart();
+
+            d.fx = d.x;
+            d.fy = d.y;
+          })
+          .on('drag', (d) => {
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+          })
+          .on('end', (d) => {
+            if (!d3.event.active) this.force.alphaTarget(0);
+
+            d.fx = null;
+            d.fy = null;
+          });
+
+        // define arrow markers for graph links
+        this.svg.append('svg:defs').append('svg:marker')
+            .attr('id', 'end-arrow')
+            .attr('viewBox', '0 -5 10 10')
+            .attr('refX', 6)
+            .attr('markerWidth', 3)
+            .attr('markerHeight', 3)
+            .attr('orient', 'auto')
+          .append('svg:path')
+            .attr('d', 'M0,-5L10,0L0,5')
+            .attr('fill', '#000');
+
+        this.svg.append('svg:defs').append('svg:marker')
+            .attr('id', 'start-arrow')
+            .attr('viewBox', '0 -5 10 10')
+            .attr('refX', 4)
+            .attr('markerWidth', 3)
+            .attr('markerHeight', 3)
+            .attr('orient', 'auto')
+          .append('svg:path')
+            .attr('d', 'M10,-5L0,0L10,5')
+            .attr('fill', '#000');
+
+        // line displayed when dragging new nodes
+        this.dragLine = this.svg.append('svg:path')
+          .attr('class', 'link dragline hidden')
+          .attr('d', 'M0,0L0,0');
+
+        // handles to link and node element groups
+        this.path = this.svg.append('svg:g').selectAll('path');
+        this.circle = this.svg.append('svg:g').selectAll('g');
+
+        // mouse event vars
+        this.selectedNode = null;
+        this.selectedLink = null;
+        this.mousedownLink = null;
+        this.mousedownNode = null;
+        this.mouseupNode = null;
+
+        var scope = this;
+        // app starts here
+        this.svg.on('mousedown', function() {
+            scope.mousedown.bind(scope)(this);
+        }).on('mousemove', this.mousemove.bind(this))
+          .on('mouseup', this.mouseup.bind(this));
+        d3.select(window)
+          .on('keydown', this.keydown.bind(this))
+          .on('keyup', this.keyup.bind(this));
+        this.restart();
+    }
+}

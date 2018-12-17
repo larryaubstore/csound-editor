@@ -66,13 +66,14 @@
 
 <script>
 
-import draw             from './linen/d3View';
+import { LinenNode }             from './linen/d3View';
 
 export default {
 
     name: 'Linen',
     mounted: function () {
-        draw();
+        var linenNode = new LinenNode();
+        linenNode.draw();
     },
     data: function () {
         return {
