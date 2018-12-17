@@ -72,6 +72,7 @@ export class LinenNode {
         // add new nodes
         const g = this.circle.enter().append('svg:g');
 
+        var scope = this;
         g.append('svg:circle')
           .attr('class', 'node')
           .attr('r', 12)
@@ -79,43 +80,43 @@ export class LinenNode {
           .style('stroke', (d) => d3.rgb(this.colors(d.id)).darker().toString())
           .classed('reflexive', (d) => d.reflexive)
           .on('mouseover', function (d) {
-            if (!this.mousedownNode || d === this.mousedownNode) return;
+            if (!scope.mousedownNode || d === scope.mousedownNode) return;
             // enlarge target node
             d3.select(this).attr('transform', 'scale(1.1)');
           })
           .on('mouseout', function (d) {
-            if (!this.mousedownNode || d === this.mousedownNode) return;
+            if (!scope.mousedownNode || d === scope.mousedownNode) return;
             // unenlarge target node
             d3.select(this).attr('transform', '');
           })
-          .on('mousedown', (d) => {
+          .on('mousedown', function (d) {
             if (d3.event.ctrlKey) return;
 
             // select node
-            this.mousedownNode = d;
-            this.selectedNode = (this.mousedownNode === this.selectedNode) ? null : this.mousedownNode;
-            this.selectedLink = null;
+            scope.mousedownNode = d;
+            scope.selectedNode = (scope.mousedownNode === scope.selectedNode) ? null : scope.mousedownNode;
+            scope.selectedLink = null;
 
             // reposition drag line
-            this.dragLine
+            scope.dragLine
               .style('marker-end', 'url(#end-arrow)')
               .classed('hidden', false)
-              .attr('d', `M${this.mousedownNode.x},${this.mousedownNode.y}L${this.mousedownNode.x},${this.mousedownNode.y}`);
+              .attr('d', `M${scope.mousedownNode.x},${scope.mousedownNode.y}L${scope.mousedownNode.x},${scope.mousedownNode.y}`);
 
-            this.restart();
+            scope.restart();
           })
           .on('mouseup', function (d) {
-            if (!this.mousedownNode) return;
+            if (!scope.mousedownNode) return;
 
             // needed by FF
-            this.dragLine
+            scope.dragLine
               .classed('hidden', true)
               .style('marker-end', '');
 
             // check for drag-to-self
-            this.mouseupNode = d;
-            if (this.mouseupNode === this.mousedownNode) {
-              this.resetMouseVars();
+            scope.mouseupNode = d;
+            if (scope.mouseupNode === scope.mousedownNode) {
+              scope.resetMouseVars();
               return;
             }
 
@@ -124,21 +125,21 @@ export class LinenNode {
 
             // add link to graph (update if exists)
             // NB: links are strictly source < target; arrows separately specified by booleans
-            const isRight = this.mousedownNode.id < this.mouseupNode.id;
-            const source = isRight ? this.mousedownNode : this.mouseupNode;
-            const target = isRight ? this.mouseupNode : this.mousedownNode;
+            const isRight = scope.mousedownNode.id < scope.mouseupNode.id;
+            const source = isRight ? scope.mousedownNode : scope.mouseupNode;
+            const target = isRight ? scope.mouseupNode : scope.mousedownNode;
 
-            const link = this.links.filter((l) => l.source === source && l.target === target)[0];
+            const link = scope.links.filter((l) => l.source === source && l.target === target)[0];
             if (link) {
               link[isRight ? 'right' : 'left'] = true;
             } else {
-              this.links.push({ source, target, left: !isRight, right: isRight });
+              scope.links.push({ source, target, left: !isRight, right: isRight });
             }
 
             // select new link
-            this.selectedLink = link;
-            this.selectedNode = null;
-            this.restart();
+            scope.selectedLink = link;
+            scope.selectedNode = null;
+            scope.restart();
           });
 
         // show node IDs
@@ -194,11 +195,11 @@ export class LinenNode {
       this.restart();
     }
 
-    mousemove() {
+    mousemove(event) {
       if (!this.mousedownNode) return;
 
       // update drag line
-      this.dragLine.attr('d', `M${this.mousedownNode.x},${this.mousedownNode.y}L${d3.mouse(this)[0]},${d3.mouse(this)[1]}`);
+      this.dragLine.attr('d', `M${this.mousedownNode.x},${this.mousedownNode.y}L${d3.mouse(event)[0]},${d3.mouse(event)[1]}`);
 
       this.restart();
     }
@@ -389,8 +390,11 @@ export class LinenNode {
         // app starts here
         this.svg.on('mousedown', function() {
             scope.mousedown.bind(scope)(this);
-        }).on('mousemove', this.mousemove.bind(this))
-          .on('mouseup', this.mouseup.bind(this));
+        }).on('mousemove', function () {
+            scope.mousemove.bind(scope)(this);
+        }).on('mouseup', function () {
+            scope.mouseup.bind(scope)(this)
+        });
         d3.select(window)
           .on('keydown', this.keydown.bind(this))
           .on('keyup', this.keyup.bind(this));
