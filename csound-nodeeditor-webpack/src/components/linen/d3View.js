@@ -142,12 +142,17 @@ export class LinenNode {
             scope.restart();
           });
 
-        // show node IDs
-        g.append('svg:text')
-          .attr('x', 0)
-          .attr('y', 4)
-          .attr('class', 'id')
-          .text((d) => d.id);
+        // // show node IDs
+        // g.append('svg:text')
+        //   .attr('x', 0)
+        //   .attr('y', 4)
+        //   .attr('class', 'id')
+        //   .text((d) => d.id);
+
+        g.append('svg:polygon')
+            // .attr('points', '-90,30 90,30 40,-30 -40,-30')
+            .attr('points', ' 0,0 0,-60 90,-60 90,0')
+            .attr('style', 'fill:none;stroke:black;stroke-width:3');
 
         this.circle = g.merge(this.circle);
 
@@ -310,14 +315,10 @@ export class LinenNode {
         //  - reflexive edges are indicated on the node (as a bold black circle).
         //  - links are always source < target; edge directions are set by 'left' and 'right'.
         this.nodes = [
-          { id: 0, reflexive: false },
-          { id: 1, reflexive: true },
-          { id: 2, reflexive: false }
+          { id: 0, reflexive: false }
         ];
         this.lastNodeId = 2;
         this.links = [
-          { source: this.nodes[0], target: this.nodes[1], left: false, right: true },
-          { source: this.nodes[1], target: this.nodes[2], left: false, right: true }
         ];
 
         // init D3 force layout
