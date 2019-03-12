@@ -143,11 +143,11 @@ export class LinenNode {
           });
 
         // // show node IDs
-        // g.append('svg:text')
-        //   .attr('x', 0)
-        //   .attr('y', 4)
-        //   .attr('class', 'id')
-        //   .text((d) => d.id);
+        g.append('svg:text')
+          .attr('x', 0)
+          .attr('y', 26)
+          .attr('class', 'id')
+          .text((d) => 'OSCIL');
 
         // g.append('svg:polygon')
         //     // .attr('points', '-90,30 90,30 40,-30 -40,-30')
@@ -168,6 +168,39 @@ export class LinenNode {
                 endAngle: Math.PI*0.5
             }));  
         };
+        g.append('svg:line')
+            .attr('x1', '0')
+            .attr('y1', '50')
+            .attr('x2', '0')
+            .attr('y2', '60')
+            .attr('style', 'stroke:black;stroke-width:3');
+
+
+        g.append('svg:line')
+            .attr('x1', '-30')
+            .attr('y1', '0')
+            .attr('x2', '-30')
+            .attr('y2', '-10')
+            .attr('style', 'stroke:black;stroke-width:3');
+        g.append('svg:text')
+          .attr('x', -45)
+          .attr('y', -15)
+          .text((d) => 'amp');
+
+
+        
+        g.append('svg:line')
+            .attr('x1', '30')
+            .attr('y1', '0')
+            .attr('x2', '30')
+            .attr('y2', '-10')
+            .attr('style', 'stroke:black;stroke-width:3');
+        g.append('svg:text')
+          .attr('x', 20)
+          .attr('y', -15)
+          .text((d) => 'freq');
+
+
 
         halfcircle(0,0,50).style('opacity', 1.0)
 

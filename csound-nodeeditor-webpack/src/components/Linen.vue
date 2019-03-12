@@ -54,7 +54,7 @@
     }
 
     text {
-      font: 12px sans-serif;
+      font: 16px sans-serif;
       pointer-events: none;
     }
 
