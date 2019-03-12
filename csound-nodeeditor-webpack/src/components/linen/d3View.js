@@ -149,10 +149,10 @@ export class LinenNode {
         //   .attr('class', 'id')
         //   .text((d) => d.id);
 
-        g.append('svg:polygon')
-            // .attr('points', '-90,30 90,30 40,-30 -40,-30')
-            .attr('points', ' 0,0 0,-60 90,-60 90,0')
-            .attr('style', 'fill:none;stroke:black;stroke-width:3');
+        // g.append('svg:polygon')
+        //     // .attr('points', '-90,30 90,30 40,-30 -40,-30')
+        //     .attr('points', ' 0,0 0,-60 90,-60 90,0')
+        //     .attr('style', 'fill:none;stroke:black;stroke-width:3');
 
 
         var halfcircle = function(x, y, rad) {

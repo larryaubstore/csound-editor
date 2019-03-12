@@ -10,9 +10,9 @@ Vue.use(VueCircleSlider);
 var instance = new Vue({
   render: function (createElement) {
     return createElement('div',
-        Array.apply(null, { length: 1 }).map(function () {
-            return createElement(Linen)
-        }));
+        [
+            createElement(Linen)
+        ]);
   },
   mounted: function () {
   }

@@ -13,3 +13,6 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.swo
+package-lock.json
+token
+tags
