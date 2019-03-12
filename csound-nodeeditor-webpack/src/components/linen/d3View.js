@@ -1,4 +1,4 @@
-/* eslint-disable indent */
+/* eslint-disable indent,no-multiple-empty-lines,no-undef,no-unused-vars,space-infix-ops,comma-spacing,no-trailing-spaces  */
 import * as d3      from 'd3';
 
 export class LinenNode {
@@ -153,6 +153,23 @@ export class LinenNode {
             // .attr('points', '-90,30 90,30 40,-30 -40,-30')
             .attr('points', ' 0,0 0,-60 90,-60 90,0')
             .attr('style', 'fill:none;stroke:black;stroke-width:3');
+
+
+        var halfcircle = function(x, y, rad) {
+            var arc = d3.arc();
+            return g.append('path')
+            // .attr('transform', 'translate('+[x,y]+')')
+            .attr('transform', 'rotate(180)')
+            .attr('style', 'fill:none;stroke:black;stroke-width:3')
+            .attr('d', arc({
+                innerRadius: 0,
+                outerRadius: rad,
+                startAngle: -Math.PI*0.5,
+                endAngle: Math.PI*0.5
+            }));  
+        };
+
+        halfcircle(0,0,50).style('opacity', 1.0)
 
         this.circle = g.merge(this.circle);
 
