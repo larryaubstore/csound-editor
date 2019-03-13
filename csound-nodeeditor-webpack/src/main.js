@@ -1,7 +1,6 @@
 /* eslint-disable indent, quotes, no-unused-vars, eqeqeq */
 import Vue                  from 'vue';
-// import NodeEditor         from './components/NodeEditor.vue';
-import Linen                from './components/Linen.vue';
+import Editor               from './components/Editor.vue';
 import VueCircleSlider      from 'vue-circle-slider';
 
 Vue.config.productionTip = false;
@@ -11,7 +10,7 @@ var instance = new Vue({
   render: function (createElement) {
     return createElement('div',
         [
-            createElement(Linen)
+            createElement(Editor)
         ]);
   },
   mounted: function () {

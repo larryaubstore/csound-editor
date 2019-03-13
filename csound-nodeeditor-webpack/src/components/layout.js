@@ -1,7 +1,7 @@
 /* eslint-disable indent,no-multiple-empty-lines,no-undef,no-unused-vars,space-infix-ops,comma-spacing,no-trailing-spaces  */
 import * as d3      from 'd3';
 
-export class LinenNode {
+export class Layout {
     constructor() {
         this.path = null;
         this.links = null;
