@@ -150,8 +150,7 @@ export class Layout {
             d3.select('#circle_' + d.id).classed('fixed', false);
             d.fx = null;
             d.fy = null; 
-
-          })
+          });
  
 
         // g.append('svg:polygon')
@@ -347,21 +346,14 @@ export class Layout {
             if (!d3.event.active) this.force.alphaTarget(0.3).restart();
 
             d.fixed = false;
-            d3.select('#circle_' + d.id).classed('fixed', false);
-
+            d3.select('#circle_' + d.id).classed('fixed', true);
             d.fx = d.x;
             d.fy = d.y;
-            // d3.select(this).classed('fixed', d.fixed = true);
           })
           .on('drag', (d) => {
             d3.select('#circle_' + d.id).classed('fixed', true);
-            if (d.fixed === true) {
-                // d.fx = null;
-                // d.fy = null;
-            } else {
-                d.fx = d3.event.x;
-                d.fy = d3.event.y;
-            }
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
           })
          .on('end', (d) => {
             d.fy = d3.event.y;
