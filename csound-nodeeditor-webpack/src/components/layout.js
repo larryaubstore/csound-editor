@@ -143,13 +143,6 @@ export class Layout {
             scope.restart();
           });
 
-        // // show node IDs
-        g.append('svg:text')
-          .attr('x', 0)
-          .attr('y', 26)
-          .attr('class', 'id')
-          .text((d) => 'OSCIL');
-
         // g.append('svg:polygon')
         //     // .attr('points', '-90,30 90,30 40,-30 -40,-30')
         //     .attr('points', ' 0,0 0,-60 90,-60 90,0')

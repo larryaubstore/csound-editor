@@ -2,7 +2,10 @@
 import * as d3      from 'd3';
 
 export class Linen {
-    draw(g) {
+    draw(container) {
+        const g = container.append('svg:g')
+            .attr('transform', 'translate(30, 20)');
+
         var halfcircle = function(x, y, rad) {
             var arc = d3.arc();
             return g.append('path')
@@ -31,7 +34,7 @@ export class Linen {
             .attr('style', 'stroke:black;stroke-width:3');
         g.append('svg:text')
           .attr('x', -45)
-          .attr('y', -15)
+          .attr('y', -35)
           .text((d) => 'amp');
 
         g.append('svg:line')
@@ -45,6 +48,13 @@ export class Linen {
           .attr('y', -15)
           .text((d) => 'freq');
 
-        halfcircle(0, 0, 50).style('opacity', 1.0)
+        halfcircle(0, 0, 50).style('opacity', 1.0);
+
+        // // show node IDs
+        g.append('svg:text')
+          .attr('x', 0)
+          .attr('y', 26)
+          .attr('class', 'id')
+          .text((d) => 'OSCIL');
     }
 }
