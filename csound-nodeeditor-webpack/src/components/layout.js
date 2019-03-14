@@ -73,9 +73,13 @@ export class Layout {
         // add new nodes
         const g = this.circle.enter().append('svg:g');
 
+
         var scope = this;
         g.append('svg:circle')
           .attr('class', 'node')
+          .attr('id', function (d) {
+            return 'circle_' + d.id;
+          })
           .attr('r', 12)
           .style('fill', (d) => (d === this.selectedNode) ? d3.rgb(this.colors(d.id)).brighter().toString() : this.colors(d.id))
           .style('stroke', (d) => d3.rgb(this.colors(d.id)).darker().toString())
@@ -141,7 +145,14 @@ export class Layout {
             scope.selectedLink = link;
             scope.selectedNode = null;
             scope.restart();
-          });
+          }).on('dblclick', (d) => {
+            d.fixed = false;
+            d3.select('#circle_' + d.id).classed('fixed', false);
+            d.fx = null;
+            d.fy = null; 
+
+          })
+ 
 
         // g.append('svg:polygon')
         //     // .attr('points', '-90,30 90,30 40,-30 -40,-30')
@@ -182,7 +193,9 @@ export class Layout {
         return `M${sourceX},${sourceY}L${targetX},${targetY}`;
       });
 
-      this.circle.attr('transform', (d) => `translate(${d.x},${d.y})`);
+      this.circle.attr('transform', (d) => {
+        return `translate(${d.x},${d.y})`;
+      });
     }
 
     mousedown(event) {
@@ -333,18 +346,27 @@ export class Layout {
           .on('start', (d) => {
             if (!d3.event.active) this.force.alphaTarget(0.3).restart();
 
+            d.fixed = false;
+            d3.select('#circle_' + d.id).classed('fixed', false);
+
             d.fx = d.x;
             d.fy = d.y;
+            // d3.select(this).classed('fixed', d.fixed = true);
           })
           .on('drag', (d) => {
-            d.fx = d3.event.x;
-            d.fy = d3.event.y;
+            d3.select('#circle_' + d.id).classed('fixed', true);
+            if (d.fixed === true) {
+                // d.fx = null;
+                // d.fy = null;
+            } else {
+                d.fx = d3.event.x;
+                d.fy = d3.event.y;
+            }
           })
-          .on('end', (d) => {
-            if (!d3.event.active) this.force.alphaTarget(0);
-
-            d.fx = null;
-            d.fy = null;
+         .on('end', (d) => {
+            d.fy = d3.event.y;
+            d.fixed = true;
+            d3.select('#circle_' + d.id).classed('fixed', true);
           });
 
         // define arrow markers for graph links

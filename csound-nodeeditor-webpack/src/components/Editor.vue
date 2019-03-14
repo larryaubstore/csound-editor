@@ -62,6 +62,10 @@
       text-anchor: middle;
       font-weight: bold;
     }
+
+    circle.node.fixed {
+      fill: #f00 !important;
+    }
 </style>
 
 <script>
