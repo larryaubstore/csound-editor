@@ -1,4 +1,4 @@
-/* eslint-disable indent,no-multiple-empty-lines,no-undef,no-unused-vars,space-infix-ops,comma-spacing,no-trailing-spaces  */
+/* eslint-disable indent,no-multiple-empty-lines,no-undef,no-unused-vars,space-infix-ops,comma-spacing,no-trailing-spaces,object-property-newline */
 import * as d3      from 'd3';
 import { Linen }    from './d3Component/linen';
 
@@ -72,6 +72,9 @@ export class Layout {
 
         // add new nodes
         const g = this.circle.enter().append('svg:g');
+        /// const g = this.circle.enter().append('svg:g').filter(function (d) {
+        ///     return typeof (d.fixed) === 'undefined';
+        /// });
 
 
         var scope = this;
@@ -160,7 +163,11 @@ export class Layout {
 
 
         var linen = new Linen();
-        linen.draw(g);
+
+        var fixedCircle = g.filter(function (d) {
+            return (typeof (d.fixed) !== 'undefined');
+        });
+        linen.draw(fixedCircle);
 
 
         this.circle = g.merge(this.circle);
@@ -326,7 +333,8 @@ export class Layout {
         //  - reflexive edges are indicated on the node (as a bold black circle).
         //  - links are always source < target; edge directions are set by 'left' and 'right'.
         this.nodes = [
-          { id: 0, reflexive: false }
+          {id: 0, reflexive: false},
+          {id: 1, reflexive: false, fixed: true}
         ];
         this.lastNodeId = 2;
         this.links = [
