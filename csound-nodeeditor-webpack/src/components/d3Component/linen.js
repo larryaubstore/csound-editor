@@ -6,19 +6,38 @@ export class Linen {
         const g = container.append('svg:g')
             .attr('transform', 'translate(30, 20)');
 
+        var drag = d3.drag()
+          .on('start', (d) => {
+          })
+          .on('drag', (d) => {
+            console.log('-----');
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+          })
+          .on('end', (d) => {
+          });
+
         var halfcircle = function(x, y, rad) {
             var arc = d3.arc();
             return g.append('path')
-            // .attr('transform', 'translate('+[x,y]+')')
             .attr('transform', 'rotate(180)')
-            .attr('style', 'fill:none;stroke:black;stroke-width:3')
+            .attr('style', 'fill:white;stroke:black;stroke-width:3')
             .attr('d', arc({
                 innerRadius: 0,
                 outerRadius: rad,
                 startAngle: -Math.PI * 0.5,
                 endAngle: Math.PI * 0.5
-            }));
+            }))
+            .on('mouseover', function (d) {
+                // enlarge target node
+                // d3.select(this).attr('transform', 'scale(1.1) rotate(180)');
+            })
+            .on('mouseout', function (d) {
+                // unenlarge target node
+                // d3.select(this).attr('transform', 'rotate(180)');
+            });
         };
+
         g.append('svg:line')
             .attr('x1', '0')
             .attr('y1', '50')
@@ -48,7 +67,9 @@ export class Linen {
           .attr('y', -35)
           .text((d) => 'freq');
 
-        halfcircle(0, 0, 50).style('opacity', 1.0);
+        var elem = halfcircle(0, 0, 50).style('opacity', 1.0);
+        // elem.call(drag);
+        container.call(drag);
 
         // // show node IDs
         g.append('svg:text')

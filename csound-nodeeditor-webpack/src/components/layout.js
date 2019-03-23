@@ -72,10 +72,6 @@ export class Layout {
 
         // add new nodes
         const g = this.circle.enter().append('svg:g');
-        /// const g = this.circle.enter().append('svg:g').filter(function (d) {
-        ///     return typeof (d.fixed) === 'undefined';
-        /// });
-
 
         var scope = this;
         g.append('svg:circle')
@@ -156,14 +152,7 @@ export class Layout {
           });
  
 
-        // g.append('svg:polygon')
-        //     // .attr('points', '-90,30 90,30 40,-30 -40,-30')
-        //     .attr('points', ' 0,0 0,-60 90,-60 90,0')
-        //     .attr('style', 'fill:none;stroke:black;stroke-width:3');
-
-
         var linen = new Linen();
-
         var fixedCircle = g.filter(function (d) {
             return !d.isChild;
         });
@@ -260,8 +249,8 @@ export class Layout {
 
       // ctrl
       if (d3.event.keyCode === 17) {
-        this.circle.call(this.drag);
-        this.svg.classed('ctrl', true);
+        // this.circle.call(this.drag);
+        // this.svg.classed('ctrl', true);
       }
 
       if (!this.selectedNode && !this.selectedLink) return;
@@ -346,7 +335,13 @@ export class Layout {
            fixed: true,
            isChild: true, 
            fx: 610, 
-           fy: 200}
+           fy: 200},
+          {id: 2, 
+           reflexive: false, 
+           fixed: true, 
+           isChild: true, 
+           fx: 580,
+           fy: 290}
         ];
         this.lastNodeId = 2;
         this.links = [
@@ -371,6 +366,7 @@ export class Layout {
             d.fy = d.y;
           })
           .on('drag', (d) => {
+            console.log('DRAG **********************');
             d3.select('#circle_' + d.id).classed('fixed', true);
             d.fx = d3.event.x;
             d.fy = d3.event.y;
