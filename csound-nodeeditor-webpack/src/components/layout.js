@@ -165,7 +165,7 @@ export class Layout {
         var linen = new Linen();
 
         var fixedCircle = g.filter(function (d) {
-            return (typeof (d.fixed) !== 'undefined');
+            return !d.isChild;
         });
         linen.draw(fixedCircle);
 
@@ -333,8 +333,20 @@ export class Layout {
         //  - reflexive edges are indicated on the node (as a bold black circle).
         //  - links are always source < target; edge directions are set by 'left' and 'right'.
         this.nodes = [
-          {id: 0, reflexive: false},
-          {id: 1, reflexive: false, fixed: true}
+          {id: 0, 
+           reflexive: false,
+           fixed: true, 
+           isChild: false, 
+           fx: 550, 
+           fy: 200,
+           originalx: 550, 
+           originaly: 200},
+          {id: 1, 
+           reflexive: false,
+           fixed: true,
+           isChild: true, 
+           fx: 610, 
+           fy: 200}
         ];
         this.lastNodeId = 2;
         this.links = [
@@ -343,7 +355,7 @@ export class Layout {
         // init D3 force layout
         this.force = d3.forceSimulation()
           .force('link', d3.forceLink().id((d) => d.id).distance(150))
-          .force('charge', d3.forceManyBody().strength(-500))
+          .force('charge', d3.forceManyBody().strength(-400))
           .force('x', d3.forceX(width / 2))
           .force('y', d3.forceY(height / 2))
           .on('tick', this.tick.bind(this));

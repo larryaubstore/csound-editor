@@ -45,7 +45,7 @@ export class Linen {
             .attr('style', 'stroke:black;stroke-width:3');
         g.append('svg:text')
           .attr('x', 20)
-          .attr('y', -15)
+          .attr('y', -35)
           .text((d) => 'freq');
 
         halfcircle(0, 0, 50).style('opacity', 1.0);
