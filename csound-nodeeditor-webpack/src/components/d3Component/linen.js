@@ -11,17 +11,21 @@ export class Linen {
           })
           .on('drag', (d) => {
             console.log('-----');
+            // console.log(d);
             d.fx = d3.event.x;
             d.fy = d3.event.y;
 
+            console.log('id --', d.id);
             var deltax = d.originalx - d.fx;
             var deltay = d.originaly - d.fy;
 
-            nodes[1].fx = nodes[1].originalx - deltax;
-            nodes[1].fy = nodes[1].originaly - deltay;
-
-            nodes[2].fx = nodes[2].originalx - deltax;
-            nodes[2].fy = nodes[2].originaly - deltay;
+            if (d.children) {
+                for (var i = 0; i < d.children.length; i++) {
+                    var index = d.children[i];
+                    nodes[index].fx = nodes[index].originalx - deltax;
+                    nodes[index].fy = nodes[index].originaly - deltay;
+                }
+            }
           })
           .on('end', (d) => {
           });
