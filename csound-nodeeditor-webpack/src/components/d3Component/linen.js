@@ -1,8 +1,8 @@
-/* eslint-disable indent */
+/* eslint-disable indent, no-unused-vars */
 import * as d3      from 'd3';
 
 export class Linen {
-    draw(container) {
+    draw(container, nodes) {
         const g = container.append('svg:g')
             .attr('transform', 'translate(30, 20)');
 
@@ -13,6 +13,15 @@ export class Linen {
             console.log('-----');
             d.fx = d3.event.x;
             d.fy = d3.event.y;
+
+            var deltax = d.originalx - d.fx;
+            var deltay = d.originaly - d.fy;
+
+            nodes[1].fx = nodes[1].originalx - deltax;
+            nodes[1].fy = nodes[1].originaly - deltay;
+
+            nodes[2].fx = nodes[2].originalx - deltax;
+            nodes[2].fy = nodes[2].originaly - deltay;
           })
           .on('end', (d) => {
           });

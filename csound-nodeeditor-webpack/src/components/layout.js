@@ -156,7 +156,7 @@ export class Layout {
         var fixedCircle = g.filter(function (d) {
             return !d.isChild;
         });
-        linen.draw(fixedCircle);
+        linen.draw(fixedCircle, this.nodes);
 
 
         this.circle = g.merge(this.circle);
@@ -329,17 +329,22 @@ export class Layout {
            fx: 550, 
            fy: 200,
            originalx: 550, 
-           originaly: 200},
+           originaly: 200,
+           children: [1,2]},
           {id: 1, 
            reflexive: false,
            fixed: true,
            isChild: true, 
+           originalx: 610,
+           originaly: 200,
            fx: 610, 
            fy: 200},
           {id: 2, 
            reflexive: false, 
            fixed: true, 
            isChild: true, 
+           originalx: 580,
+           originaly: 290,
            fx: 580,
            fy: 290}
         ];
