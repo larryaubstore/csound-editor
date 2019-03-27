@@ -50,6 +50,9 @@ export class Layout {
           .on('mousedown', (d) => {
             if (d3.event.ctrlKey) return;
 
+
+            console.log('MOUSE DOWN ***************');
+
             // select link
             this.mousedownLink = d;
             this.selectedLink = (this.mousedownLink === this.selectedLink) ? null : this.mousedownLink;
@@ -82,6 +85,13 @@ export class Layout {
           .attr('r', 12)
           .style('fill', (d) => (d === this.selectedNode) ? d3.rgb(this.colors(d.id)).brighter().toString() : this.colors(d.id))
           .style('stroke', (d) => d3.rgb(this.colors(d.id)).darker().toString())
+          .style('display', (d) => {
+            if (!d.isChild) {
+                return 'none';
+            } else {
+                return 'block';
+            }
+          })
           .classed('reflexive', (d) => d.reflexive)
           .on('mouseover', function (d) {
             if (!scope.mousedownNode || d === scope.mousedownNode) return;
@@ -94,6 +104,7 @@ export class Layout {
             d3.select(this).attr('transform', '');
           })
           .on('mousedown', function (d) {
+            console.log('MOUSE DOWN CIRCLE ********');
             if (d3.event.ctrlKey) return;
 
             // select node
@@ -110,6 +121,7 @@ export class Layout {
             scope.restart();
           })
           .on('mouseup', function (d) {
+            console.log('MOUSE UP CIRCLE ********');
             if (!scope.mousedownNode) return;
 
             // needed by FF
@@ -135,8 +147,10 @@ export class Layout {
 
             const link = scope.links.filter((l) => l.source === source && l.target === target)[0];
             if (link) {
+              console.log('LINK');
               link[isRight ? 'right' : 'left'] = true;
             } else {
+              console.log('NO LINK *******');
               scope.links.push({ source, target, left: !isRight, right: isRight });
             }
 
@@ -203,6 +217,7 @@ export class Layout {
       const point = d3.mouse(event);
       const node = { id: ++this.lastNodeId, 
                      reflexive: false, 
+                     isChild: true, 
                      x: point[0], 
                      y: point[1],
                      fx: point[0],
@@ -349,30 +364,41 @@ export class Layout {
         //  - links are always source < target; edge directions are set by 'left' and 'right'.
         this.nodes = [
           {id: 0, 
-           reflexive: false,
+           reflexive: true,
            fixed: true, 
-           isChild: false, 
+           isChild: true, 
            fx: 550, 
-           fy: 200,
+           fy: 225,
            originalx: 550, 
-           originaly: 200,
-           children: [1,2]},
+           originaly: 225},
           {id: 1, 
-           reflexive: false,
+           reflexive: true,
            fixed: true,
            isChild: true, 
            originalx: 610,
-           originaly: 200,
+           originaly: 225,
            fx: 610, 
-           fy: 200},
+           fy: 225},
           {id: 2, 
-           reflexive: false, 
+           reflexive: true, 
            fixed: true, 
            isChild: true, 
            originalx: 580,
-           originaly: 290,
+           originaly: 315,
            fx: 580,
-           fy: 290}
+           fy: 315},
+          {
+           id: 3,
+           reflexive: true,
+           fixed: true,
+           isChild: false, 
+           originalx: 580,
+           originaly: 245,
+           fx: 580, 
+           fy: 245,
+           children: [0,1,2]
+          }
+ 
         ];
         this.lastNodeId = 2;
         this.links = [
@@ -397,7 +423,6 @@ export class Layout {
             d.fy = d.y;
           })
           .on('drag', (d) => {
-            console.log('DRAG **********************');
             d3.select('#circle_' + d.id).classed('fixed', true);
             d.fx = d3.event.x;
             d.fy = d3.event.y;

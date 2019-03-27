@@ -4,18 +4,15 @@ import * as d3      from 'd3';
 export class Linen {
     draw(container, nodes) {
         const g = container.append('svg:g')
-            .attr('transform', 'translate(30, 20)');
+//             .attr('transform', 'translate(0, -30)');
 
         var drag = d3.drag()
           .on('start', (d) => {
           })
           .on('drag', (d) => {
-            console.log('-----');
-            // console.log(d);
             d.fx = d3.event.x;
             d.fy = d3.event.y;
 
-            console.log('id --', d.id);
             var deltax = d.originalx - d.fx;
             var deltay = d.originaly - d.fy;
 
@@ -66,7 +63,7 @@ export class Linen {
             .attr('style', 'stroke:black;stroke-width:3');
         g.append('svg:text')
           .attr('x', -45)
-          .attr('y', -35)
+          .attr('y', -45)
           .text((d) => 'amp');
 
         g.append('svg:line')
@@ -77,7 +74,7 @@ export class Linen {
             .attr('style', 'stroke:black;stroke-width:3');
         g.append('svg:text')
           .attr('x', 20)
-          .attr('y', -35)
+          .attr('y', -45)
           .text((d) => 'freq');
 
         var elem = halfcircle(0, 0, 50).style('opacity', 1.0);
