@@ -51,7 +51,6 @@ export class Layout {
             if (d3.event.ctrlKey) return;
 
 
-            console.log('MOUSE DOWN ***************');
 
             // select link
             this.mousedownLink = d;
@@ -104,7 +103,6 @@ export class Layout {
             d3.select(this).attr('transform', '');
           })
           .on('mousedown', function (d) {
-            console.log('MOUSE DOWN CIRCLE ********');
             if (d3.event.ctrlKey) return;
 
             // select node
@@ -121,7 +119,6 @@ export class Layout {
             scope.restart();
           })
           .on('mouseup', function (d) {
-            console.log('MOUSE UP CIRCLE ********');
             if (!scope.mousedownNode) return;
 
             // needed by FF
@@ -147,10 +144,8 @@ export class Layout {
 
             const link = scope.links.filter((l) => l.source === source && l.target === target)[0];
             if (link) {
-              console.log('LINK');
               link[isRight ? 'right' : 'left'] = true;
             } else {
-              console.log('NO LINK *******');
               scope.links.push({ source, target, left: !isRight, right: isRight });
             }
 
@@ -214,6 +209,7 @@ export class Layout {
       if (d3.event.ctrlKey || this.mousedownNode || this.mousedownLink) return;
 
       // insert new node at point
+      var nodeCloned = null;
       const point = d3.mouse(event);
       const node = { id: ++this.lastNodeId, 
                      reflexive: false, 
@@ -223,17 +219,22 @@ export class Layout {
                      fx: point[0],
                      fy: point[1],
                      originalx: point[0],
-                     originaly: point[1],
-                     children: [this.lastNodeId + 1, this.lastNodeId + 2]};
-      this.nodes.push(node);
+                     originaly: point[1]
+                    };
+      nodeCloned = JSON.parse(JSON.stringify(node));
+      this.nodes.push(nodeCloned);
 
-      var nodeCloned = JSON.parse(JSON.stringify(node));
+      
+
+      nodeCloned = JSON.parse(JSON.stringify(node));
       nodeCloned.id = this.lastNodeId + 1;
       nodeCloned.isChild = true;
       nodeCloned.originalx = nodeCloned.originalx + 60;
       nodeCloned.fx = nodeCloned.fx + 60;
+      nodeCloned.originaly = nodeCloned.originaly - 0;
+      nodeCloned.fy = nodeCloned.fy - 0;
       this.nodes.push(nodeCloned);
- 
+
       nodeCloned = JSON.parse(JSON.stringify(node));
       nodeCloned.id = this.lastNodeId + 2;
       nodeCloned.isChild = true;
@@ -242,8 +243,20 @@ export class Layout {
       nodeCloned.originaly = nodeCloned.originaly + 90;
       nodeCloned.fy = nodeCloned.fy + 90;
       this.nodes.push(nodeCloned);
+
+      /***********************/
+      nodeCloned = JSON.parse(JSON.stringify(node));
+      nodeCloned.id = this.lastNodeId + 3;
+      nodeCloned.isChild = false;
+      nodeCloned.originalx = nodeCloned.originalx + 30;
+      nodeCloned.fx = nodeCloned.fx + 30;
+      nodeCloned.originaly = nodeCloned.originaly + 20;
+      nodeCloned.fy = nodeCloned.fy + 20;
+      nodeCloned.children =  [this.lastNodeId, this.lastNodeId + 1, this.lastNodeId + 2];
+      this.nodes.push(nodeCloned);
+
     
-      this.lastNodeId = this.lastNodeId + 2;
+      this.lastNodeId = this.lastNodeId + 3;
 
       this.restart();
     }
@@ -400,7 +413,7 @@ export class Layout {
           }
  
         ];
-        this.lastNodeId = 2;
+        this.lastNodeId = 3;
         this.links = [
         ];
 
