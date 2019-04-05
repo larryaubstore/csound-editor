@@ -75,10 +75,6 @@ export default {
 </script>
 
 <style>
-  html, body {
-    height: 100%;
-    height: 100%;
-  }
 
   .node .control input, .node .input-control input {
     width: 140px;

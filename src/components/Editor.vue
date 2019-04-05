@@ -6,6 +6,20 @@
 
 <style>
 
+    body {
+      margin-top: 0px;
+      margin-left: 0px;
+      background-color: #ffedd6;
+    }
+
+    .linen-container {
+      height: 100vh;
+      background-color: white;
+      position: absolute;
+      left: 150px;
+      top: 0px;
+    }
+
     svg {
       background-color: #FFF;
       cursor: default;
@@ -81,7 +95,7 @@ export default {
     },
     data: function () {
         return {
-            sliderValue: 75
+            sliderValue: 50
         };
     },
     watch: {
