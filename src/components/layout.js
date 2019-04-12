@@ -1,6 +1,6 @@
 /* eslint-disable indent,no-multiple-empty-lines,no-undef,no-unused-vars,space-infix-ops,comma-spacing,no-trailing-spaces,object-property-newline */
 import * as d3      from 'd3';
-import { Linen }    from './d3Component/linen';
+import { Oscil }    from './d3Component/oscil';
 
 export class Layout {
     constructor() {
@@ -161,11 +161,11 @@ export class Layout {
           });
  
 
-        var linen = new Linen();
+        var oscil = new Oscil();
         var fixedCircle = g.filter(function (d) {
             return !d.isChild;
         });
-        linen.draw(fixedCircle, this.nodes);
+        oscil.draw(fixedCircle, this.nodes);
 
 
         this.circle = g.merge(this.circle);

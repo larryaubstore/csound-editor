@@ -1,7 +1,7 @@
 /* eslint-disable indent, no-unused-vars */
 import * as d3      from 'd3';
 
-export class Linen {
+export class Oscil {
     draw(container, nodes) {
         const g = container.append('svg:g')
 //             .attr('transform', 'translate(0, -30)');

@@ -1,6 +1,7 @@
 <template>
     <div class="linen-container">
-        <circle-slider style="position: absolute" v-model="sliderValue"></circle-slider>
+        <circle-slider style="position: absolute; right: 15px;top: 15px" v-model="sliderValue"></circle-slider>
+        <div style="position: absolute; right:35px; top: 55px; font-weight: bold">ZOOM</div>
     </div>
 </template>
 
@@ -88,7 +89,7 @@ import { Layout }             from './layout';
 
 export default {
 
-    name: 'Linen',
+    name: 'Editor',
     mounted: function () {
         var layout = new Layout();
         layout.draw();
