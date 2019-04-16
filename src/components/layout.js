@@ -209,55 +209,9 @@ export class Layout {
       if (d3.event.ctrlKey || this.mousedownNode || this.mousedownLink) return;
 
       // insert new node at point
-      var nodeCloned = null;
       const point = d3.mouse(event);
-      const node = { id: ++this.lastNodeId, 
-                     reflexive: false, 
-                     isChild: true, 
-                     x: point[0], 
-                     y: point[1],
-                     fx: point[0],
-                     fy: point[1],
-                     originalx: point[0],
-                     originaly: point[1]
-                    };
-      nodeCloned = JSON.parse(JSON.stringify(node));
-      this.nodes.push(nodeCloned);
-
-      
-
-      nodeCloned = JSON.parse(JSON.stringify(node));
-      nodeCloned.id = this.lastNodeId + 1;
-      nodeCloned.isChild = true;
-      nodeCloned.originalx = nodeCloned.originalx + 60;
-      nodeCloned.fx = nodeCloned.fx + 60;
-      nodeCloned.originaly = nodeCloned.originaly - 0;
-      nodeCloned.fy = nodeCloned.fy - 0;
-      this.nodes.push(nodeCloned);
-
-      nodeCloned = JSON.parse(JSON.stringify(node));
-      nodeCloned.id = this.lastNodeId + 2;
-      nodeCloned.isChild = true;
-      nodeCloned.originalx = nodeCloned.originalx + 30;
-      nodeCloned.fx = nodeCloned.fx + 30;
-      nodeCloned.originaly = nodeCloned.originaly + 90;
-      nodeCloned.fy = nodeCloned.fy + 90;
-      this.nodes.push(nodeCloned);
-
-      /***********************/
-      nodeCloned = JSON.parse(JSON.stringify(node));
-      nodeCloned.id = this.lastNodeId + 3;
-      nodeCloned.isChild = false;
-      nodeCloned.originalx = nodeCloned.originalx + 30;
-      nodeCloned.fx = nodeCloned.fx + 30;
-      nodeCloned.originaly = nodeCloned.originaly + 20;
-      nodeCloned.fy = nodeCloned.fy + 20;
-      nodeCloned.children =  [this.lastNodeId, this.lastNodeId + 1, this.lastNodeId + 2];
-      this.nodes.push(nodeCloned);
-
-    
-      this.lastNodeId = this.lastNodeId + 3;
-
+      var oscil = new Oscil();
+      oscil.addCircle(this, point);
       this.restart();
     }
 

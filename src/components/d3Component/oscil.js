@@ -1,8 +1,63 @@
 /* eslint-disable indent, no-unused-vars */
 import * as d3      from 'd3';
+import * as debug   from 'debug';
 
 export class Oscil {
+    constructor() {
+        this.log = debug('oscil');
+    }
+
+    addCircle(layout, point) {
+        this.log('addCircle');
+
+        var nodeCloned = null;
+        const node = { id: ++layout.lastNodeId,
+                     reflexive: false,
+                     isChild: true,
+                     x: point[0],
+                     y: point[1],
+                     fx: point[0],
+                     fy: point[1],
+                     originalx: point[0],
+                     originaly: point[1]
+                    };
+        nodeCloned = JSON.parse(JSON.stringify(node));
+        layout.nodes.push(nodeCloned);
+
+        nodeCloned = JSON.parse(JSON.stringify(node));
+        nodeCloned.id = layout.lastNodeId + 1;
+        nodeCloned.isChild = true;
+        nodeCloned.originalx = nodeCloned.originalx + 60;
+        nodeCloned.fx = nodeCloned.fx + 60;
+        nodeCloned.originaly = nodeCloned.originaly - 0;
+        nodeCloned.fy = nodeCloned.fy - 0;
+        layout.nodes.push(nodeCloned);
+
+        nodeCloned = JSON.parse(JSON.stringify(node));
+        nodeCloned.id = layout.lastNodeId + 2;
+        nodeCloned.isChild = true;
+        nodeCloned.originalx = nodeCloned.originalx + 30;
+        nodeCloned.fx = nodeCloned.fx + 30;
+        nodeCloned.originaly = nodeCloned.originaly + 90;
+        nodeCloned.fy = nodeCloned.fy + 90;
+        layout.nodes.push(nodeCloned);
+
+        /***********************/
+        nodeCloned = JSON.parse(JSON.stringify(node));
+        nodeCloned.id = layout.lastNodeId + 3;
+        nodeCloned.isChild = false;
+        nodeCloned.originalx = nodeCloned.originalx + 30;
+        nodeCloned.fx = nodeCloned.fx + 30;
+        nodeCloned.originaly = nodeCloned.originaly + 20;
+        nodeCloned.fy = nodeCloned.fy + 20;
+        nodeCloned.children =  [layout.lastNodeId, layout.lastNodeId + 1, layout.lastNodeId + 2];
+        layout.nodes.push(nodeCloned);
+
+        layout.lastNodeId = layout.lastNodeId + 3;
+    }
+
     draw(container, nodes) {
+        this.log('draw');
         const g = container.append('svg:g')
 //             .attr('transform', 'translate(0, -30)');
 
