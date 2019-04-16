@@ -16,7 +16,8 @@
     "rete-comment-plugin": "^0.2.0",
     "rete-context-menu-plugin": "^0.3.1",
     "vue": "^2.5.2",
-    "vue-circle-slider": "^1.0.2"
+    "vue-circle-slider": "^1.0.2",
+    "vue-template-compiler": "^2.6.10"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
@@ -59,7 +60,6 @@
     "url-loader": "^0.5.8",
     "vue-loader": "^13.3.0",
     "vue-style-loader": "^3.0.1",
-    "vue-template-compiler": "^2.5.2",
     "webpack": "^3.6.0",
     "webpack-bundle-analyzer": "^2.9.0",
     "webpack-dev-server": "^2.9.1",
