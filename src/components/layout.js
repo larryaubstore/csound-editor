@@ -329,48 +329,14 @@ export class Layout {
         //  - nodes are known by 'id', not by index in array.
         //  - reflexive edges are indicated on the node (as a bold black circle).
         //  - links are always source < target; edge directions are set by 'left' and 'right'.
-        this.nodes = [
-          {id: 0, 
-           reflexive: true,
-           fixed: true, 
-           isChild: true, 
-           fx: 550, 
-           fy: 225,
-           originalx: 550, 
-           originaly: 225},
-          {id: 1, 
-           reflexive: true,
-           fixed: true,
-           isChild: true, 
-           originalx: 610,
-           originaly: 225,
-           fx: 610, 
-           fy: 225},
-          {id: 2, 
-           reflexive: true, 
-           fixed: true, 
-           isChild: true, 
-           originalx: 580,
-           originaly: 315,
-           fx: 580,
-           fy: 315},
-          {
-           id: 3,
-           reflexive: true,
-           fixed: true,
-           isChild: false, 
-           originalx: 580,
-           originaly: 245,
-           fx: 580, 
-           fy: 245,
-           children: [0,1,2]
-          }
- 
-        ];
-        this.lastNodeId = 3;
-        this.links = [
-        ];
+        //
+        this.lastNodeId = -1;
+        this.links = [];
+        this.nodes = [];
 
+
+        var oscil = new Oscil();
+        oscil.addCircle(this, [550, 225]); 
         // init D3 force layout
         this.force = d3.forceSimulation()
           .force('link', d3.forceLink().id((d) => d.id).distance(150))
