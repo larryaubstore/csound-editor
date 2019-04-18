@@ -2,6 +2,22 @@
     <div class="linen-container">
         <circle-slider style="position: absolute; right: 15px;top: 15px" v-model="sliderValue"></circle-slider>
         <div style="position: absolute; right:35px; top: 55px; font-weight: bold">ZOOM</div>
+
+
+        <radial-menu
+              style="background-color: white"
+              :itemSize="50"
+              :radius="120"
+              :angle-restriction="180">
+                <radial-menu-item 
+                  v-for="(item, index) in items" 
+                  :key="index" 
+                  style="background-color: white" 
+                  @click="() => handleClick(item)">
+                  <span>{{item}}</span>
+                </radial-menu-item>
+        </radial-menu>
+        <div style="color: rgba(0,0,0,0.6); margin-top: 16px;">{{ lastClicked }}</div>
     </div>
 </template>
 
@@ -81,23 +97,42 @@
     circle.node.fixed {
       fill: #f00 !important;
     }
+
+    .vue-radial-menu-wrapper {
+        position: absolute;
+        top: 300px;
+        left: 500px;
+    }
 </style>
 
 <script>
 
-import { Layout }             from './layout';
+import { Layout }                       from './layout';
+import { RadialMenu,  RadialMenuItem }  from 'vue-radial-menu';
+import { Oscil }                        from './d3Component/oscil';
 
 export default {
 
     name: 'Editor',
+    components: {
+        RadialMenu,
+        RadialMenuItem
+    },
     mounted: function () {
         var layout = new Layout();
         layout.draw();
     },
     data: function () {
         return {
-            sliderValue: 50
+            sliderValue: 50,
+            items: ['oscil' ],
+            lastClicked: ''
         };
+    },
+    methods: {
+      handleClick (item) {
+        // this.lastClicked = item;
+      }
     },
     watch: {
         sliderValue: function(newValue, oldValue) {
