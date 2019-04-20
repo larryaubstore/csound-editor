@@ -103,6 +103,10 @@
         top: 400px;
         right: 40px;
     }
+
+    .selected {
+        fill: red !important;
+    }
 </style>
 
 <script>

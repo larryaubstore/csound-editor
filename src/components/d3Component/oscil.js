@@ -102,6 +102,22 @@ export class Oscil {
             .on('mouseout', function (d) {
                 // unenlarge target node
                 // d3.select(this).attr('transform', 'rotate(180)');
+            })
+            .on('click', function (d) {
+                var classAttr = d3.select(this).attr('class');
+                if (classAttr === 'selected') {
+                    d3.select(this).attr('class', '');
+                } else {
+                    d3.select(this).attr('class', 'selected');
+                }
+            })
+            .on('keydown', function (d) {
+                debugger;
+                switch (d3.event.keyCode) {
+                    case 46: // deletei
+                        debugger;
+                    break;
+                }
             });
         };
 
