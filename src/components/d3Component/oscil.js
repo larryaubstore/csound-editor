@@ -5,6 +5,7 @@ import * as debug   from 'debug';
 export class Oscil {
     constructor() {
         this.log = debug('oscil');
+        this.drag = null;
     }
 
     addCircle(layout, point) {
@@ -61,10 +62,11 @@ export class Oscil {
         const g = container.append('svg:g')
 //             .attr('transform', 'translate(0, -30)');
 
-        var drag = d3.drag()
+        this.drag = d3.drag()
           .on('start', (d) => {
           })
           .on('drag', (d) => {
+            this.log('drag');
             d.fx = d3.event.x;
             d.fy = d3.event.y;
 
@@ -86,7 +88,7 @@ export class Oscil {
             var arc = d3.arc();
             return g.append('path')
             .attr('transform', 'rotate(180)')
-            .attr('style', 'fill:white;stroke:black;stroke-width:3')
+            .attr('style', 'fill:white;stroke:black;stroke-width:3;cursor:pointer;')
             .attr('d', arc({
                 innerRadius: 0,
                 outerRadius: rad,
@@ -134,7 +136,7 @@ export class Oscil {
 
         var elem = halfcircle(0, 0, 50).style('opacity', 1.0);
         // elem.call(drag);
-        container.call(drag);
+        container.call(this.drag);
 
         // // show node IDs
         g.append('svg:text')

@@ -13,7 +13,7 @@
                   v-for="(item, index) in items" 
                   :key="index" 
                   style="background-color: white" 
-                  @click="() => handleClick(item)">
+                  v-on:click="handleClick(item, $event)">
                   <span>{{item}}</span>
                 </radial-menu-item>
         </radial-menu>
@@ -100,8 +100,8 @@
 
     .vue-radial-menu-wrapper {
         position: absolute;
-        top: 300px;
-        left: 500px;
+        top: 400px;
+        right: 40px;
     }
 </style>
 
@@ -119,18 +119,26 @@ export default {
         RadialMenuItem
     },
     mounted: function () {
-        var layout = new Layout();
-        layout.draw();
+        this.layout = new Layout();
+        this.layout.draw();
     },
     data: function () {
         return {
             sliderValue: 50,
-            items: ['oscil' ],
-            lastClicked: ''
+            items: ['oscil', 'fosil', 'linen', 'echo' ],
+            lastClicked: '',
+            layout: null
         };
     },
     methods: {
-      handleClick (item) {
+      handleClick (item, event) {
+        switch(item) {
+            case 'oscil':
+                var oscil = new Oscil();
+
+                this.layout.mousedown(event);
+                break;
+        }
         // this.lastClicked = item;
       }
     },

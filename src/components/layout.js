@@ -1,9 +1,13 @@
 /* eslint-disable indent,no-multiple-empty-lines,no-undef,no-unused-vars,space-infix-ops,comma-spacing,no-trailing-spaces,object-property-newline */
 import * as d3      from 'd3';
 import { Oscil }    from './d3Component/oscil';
+import * as debug   from 'debug';
 
 export class Layout {
     constructor() {
+        this.oscil = null;
+        this.fixedCircle = null;
+        this.log = debug('layout');
         this.path = null;
         this.links = null;
         this.selectedNode = null;
@@ -23,6 +27,7 @@ export class Layout {
     }
 
     resetMouseVars() {
+        this.log('resetMouseVars');
         this.mousedownNode = null;
         this.mouseupNode = null;
         this.mousedownLink = null;
@@ -30,6 +35,7 @@ export class Layout {
 
     // update graph (called when needed)
     restart() {
+        this.log('restart');
         // path (link) group
         this.path = this.path.data(this.links);
 
@@ -161,11 +167,15 @@ export class Layout {
           });
  
 
-        var oscil = new Oscil();
-        var fixedCircle = g.filter(function (d) {
+        this.oscil = new Oscil();
+        this.fixedCircle = g.filter(function (d) {
             return !d.isChild;
         });
-        oscil.draw(fixedCircle, this.nodes);
+
+
+        this.log('FIXED CIRCLE LENGTH ******', this.fixedCircle.length);
+
+        this.oscil.draw(this.fixedCircle, this.nodes);
 
 
         this.circle = g.merge(this.circle);
@@ -205,8 +215,10 @@ export class Layout {
     mousedown(event) {
       // because :active only works in WebKit?
       this.svg.classed('active', true);
+      this.log('mousedown');
 
       if (d3.event.ctrlKey || this.mousedownNode || this.mousedownLink) return;
+      this.log('after this ctrlkey');
 
       // insert new node at point
       const point = d3.mouse(event);
@@ -232,6 +244,7 @@ export class Layout {
           .style('marker-end', '');
       }
 
+      this.log('mouseup');
       // because :active only works in WebKit?
       this.svg.classed('active', false);
 
@@ -241,12 +254,6 @@ export class Layout {
 
     keyup() {
       this.lastKeyDown = -1;
-
-      // ctrl
-      if (d3.event.keyCode === 17) {
-        this.circle.on('.drag', null);
-        this.svg.classed('ctrl', false);
-      }
     }
 
     keydown() {
@@ -254,12 +261,6 @@ export class Layout {
 
       if (this.lastKeyDown !== -1) return;
       this.lastKeyDown = d3.event.keyCode;
-
-      // ctrl
-      if (d3.event.keyCode === 17) {
-        // this.circle.call(this.drag);
-        // this.svg.classed('ctrl', true);
-      }
 
       if (!this.selectedNode && !this.selectedLink) return;
 
@@ -335,8 +336,8 @@ export class Layout {
         this.nodes = [];
 
 
-        var oscil = new Oscil();
-        oscil.addCircle(this, [550, 225]); 
+        /// var oscil = new Oscil();
+        /// oscil.addCircle(this, [550, 225]); 
         // init D3 force layout
         this.force = d3.forceSimulation()
           .force('link', d3.forceLink().id((d) => d.id).distance(150))
