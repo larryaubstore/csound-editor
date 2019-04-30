@@ -2,6 +2,7 @@
 import * as d3      from 'd3';
 import { Oscil }    from './d3Component/oscil';
 import * as debug   from 'debug';
+import * as _       from 'lodash';
 
 export class Layout {
     constructor() {
@@ -179,7 +180,7 @@ export class Layout {
 
         this.log('FIXED CIRCLE LENGTH ******', this.fixedCircle.length);
 
-        this.oscil.draw(this.fixedCircle, this.nodes);
+        this.oscil.draw(this.fixedCircle, this.nodes, this);
 
 
         this.circle = g.merge(this.circle);
@@ -260,6 +261,10 @@ export class Layout {
       this.lastKeyDown = -1;
     }
 
+    removeFromArray(original, remove) {
+        return original.filter(value => !remove.includes(value));
+    }
+
     keydown() {
       d3.event.preventDefault();
 
@@ -272,11 +277,20 @@ export class Layout {
         case 8: // backspace
         case 46: // delete
           if (this.selectedNode) {
-            this.nodes.splice(this.nodes.indexOf(this.selectedNode), 1);
-            this.spliceLinksForNode(this.selectedNode);
+            /// this.nodes.splice(this.nodes.indexOf(this.selectedNode), 1);
+            /// this.spliceLinksForNode(this.selectedNode);
+            return;
           } else if (this.selectedLink) {
             this.links.splice(this.links.indexOf(this.selectedLink), 1);
           } else if (this.selectedComponent) {
+            for (var i = 0; i <= this.selectedComponent.children.length; i++) {
+                this.nodes = _.filter(this.nodes, (o) => {
+                    return o.id !== this.selectedComponent.children[i];
+                });
+            }
+            this.nodes = _.filter(this.nodes, (o) => {
+                return o.id !== this.selectedComponent.master;
+            });
             // TO DO:
           }
           this.selectedLink = null;

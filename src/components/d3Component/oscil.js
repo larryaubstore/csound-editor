@@ -1,6 +1,7 @@
 /* eslint-disable indent, no-unused-vars */
 import * as d3      from 'd3';
 import * as debug   from 'debug';
+import * as _       from 'lodash';
 
 export class Oscil {
     constructor() {
@@ -55,9 +56,10 @@ export class Oscil {
         layout.nodes.push(nodeCloned);
 
         layout.lastNodeId = layout.lastNodeId + 3;
+        nodeCloned.master = layout.lastNodeId;
     }
 
-    draw(container, nodes) {
+    draw(container, nodes, layout) {
         this.log('draw');
         const g = container.append('svg:g')
 //             .attr('transform', 'translate(0, -30)');
@@ -76,8 +78,11 @@ export class Oscil {
             if (d.children) {
                 for (var i = 0; i < d.children.length; i++) {
                     var index = d.children[i];
-                    nodes[index].fx = nodes[index].originalx - deltax;
-                    nodes[index].fy = nodes[index].originaly - deltay;
+                    var nodeToMove = _.find(nodes, function (o) {
+                        return o.id === index;
+                    });
+                    nodeToMove.fx = nodeToMove.originalx - deltax;
+                    nodeToMove.fy = nodeToMove.originaly - deltay;
                 }
             }
           })
@@ -107,19 +112,13 @@ export class Oscil {
                 var classAttr = d3.select(this).attr('class');
                 if (classAttr === 'selected') {
                     d3.select(this).attr('class', '');
+                    layout.selectedComponent = null;
                 } else {
                     d3.select(this).attr('class', 'selected');
-                }
-            })
-            .on('keydown', function (d) {
-                debugger;
-                switch (d3.event.keyCode) {
-                    case 46: // deletei
-                        debugger;
-                    break;
+                    layout.selectedComponent = d;
                 }
             });
-        };
+       };
 
         g.append('svg:line')
             .attr('x1', '0')
