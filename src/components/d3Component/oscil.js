@@ -93,6 +93,9 @@ export class Oscil {
             var arc = d3.arc();
             return g.append('path')
             .attr('transform', 'rotate(180)')
+            .attr('id', function (d) {
+                return 'oscil_' + d.id;
+            })
             .attr('style', 'fill:white;stroke:black;stroke-width:3;cursor:pointer;')
             .attr('d', arc({
                 innerRadius: 0,
@@ -114,6 +117,9 @@ export class Oscil {
                     d3.select(this).attr('class', '');
                     layout.selectedComponent = null;
                 } else {
+                    if (layout.selectedComponent !== null) {
+                        d3.select('#oscil_' + layout.selectedComponent.id).attr('class', '');
+                    }
                     d3.select(this).attr('class', 'selected');
                     layout.selectedComponent = d;
                 }
