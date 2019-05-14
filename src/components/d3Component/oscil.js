@@ -69,6 +69,15 @@ export class Oscil {
           })
           .on('drag', (d) => {
             this.log('drag');
+            if (layout.selectedComponent !== null) {
+                d3.select('#oscil_' + layout.selectedComponent.id).attr('class', '');
+                layout.selectedComponent = d;
+                d3.select('#oscil_' + layout.selectedComponent.id).attr('class', 'selected');
+            } else {
+                layout.selectedComponent = d;
+                d3.select('#oscil_' + layout.selectedComponent.id).attr('class', 'selected');
+            }
+
             d.fx = d3.event.x;
             d.fy = d3.event.y;
 

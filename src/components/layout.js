@@ -64,7 +64,7 @@ export class Layout {
             this.mousedownLink = d;
             this.selectedLink = (this.mousedownLink === this.selectedLink) ? null : this.mousedownLink;
             this.selectedNode = null;
-            this.selectedComponent = null;
+            // this.selectedComponent = null;
             this.restart();
           })
           .merge(this.path);
@@ -118,7 +118,7 @@ export class Layout {
             scope.mousedownNode = d;
             scope.selectedNode = (scope.mousedownNode === scope.selectedNode) ? null : scope.mousedownNode;
             scope.selectedLink = null;
-            scope.selectedComponent = null;
+            // scope.selectedComponent = null;
 
             // reposition drag line
             scope.dragLine
@@ -162,7 +162,7 @@ export class Layout {
             // select new link
             scope.selectedLink = link;
             scope.selectedNode = null;
-            scope.selectedComponent = null;
+            // scope.selectedComponent = null;
             scope.restart();
           }).on('dblclick', (d) => {
             d.fixed = false;
@@ -266,7 +266,7 @@ export class Layout {
     }
 
     keydown() {
-      d3.event.preventDefault();
+      // d3.event.preventDefault();
 
       if (this.lastKeyDown !== -1) return;
       this.lastKeyDown = d3.event.keyCode;
@@ -276,11 +276,7 @@ export class Layout {
       switch (d3.event.keyCode) {
         case 8: // backspace
         case 46: // delete
-          if (this.selectedNode) {
-            /// this.nodes.splice(this.nodes.indexOf(this.selectedNode), 1);
-            /// this.spliceLinksForNode(this.selectedNode);
-            return;
-          } else if (this.selectedLink) {
+          if (this.selectedLink) {
             this.links.splice(this.links.indexOf(this.selectedLink), 1);
           } else if (this.selectedComponent) {
             for (var i = 0; i <= this.selectedComponent.children.length; i++) {
@@ -295,7 +291,7 @@ export class Layout {
           }
           this.selectedLink = null;
           this.selectedNode = null;
-          this.selectedComponent = null;
+          // this.selectedComponent = null;
           this.restart();
           break;
         case 66: // B
@@ -425,7 +421,7 @@ export class Layout {
         this.selectedLink = null;
         this.selectedComponent = null;
         this.mousedownLink = null;
-        this.mousedownNode = null;
+        // this.mousedownNode = null;
         this.mouseupNode = null;
 
         var scope = this;

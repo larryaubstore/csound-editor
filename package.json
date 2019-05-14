@@ -18,7 +18,8 @@
     "vue": "^2.5.2",
     "vue-circle-slider": "^1.0.2",
     "vue-radial-menu": "^1.1.1",
-    "vue-template-compiler": "^2.6.10"
+    "vue-template-compiler": "^2.6.10",
+    "vuetify": "^1.5.14"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

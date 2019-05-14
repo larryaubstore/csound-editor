@@ -1,24 +1,52 @@
 <template>
-    <div class="linen-container">
-        <circle-slider style="position: absolute; right: 15px;top: 15px" v-model="sliderValue"></circle-slider>
-        <div style="position: absolute; right:35px; top: 55px; font-weight: bold">ZOOM</div>
+    <div>
+        <div class="linen-container">
+
+            <radial-menu
+                  style="background-color: white"
+                  :itemSize="50"
+                  :radius="120"
+                  :angle-restriction="180">
+                    <radial-menu-item 
+                      v-for="(item, index) in items" 
+                      :key="index" 
+                      style="background-color: white" 
+                      v-on:click="handleClick(item, $event)">
+                      <span>{{item}}</span>
+                    </radial-menu-item>
+            </radial-menu>
+        </div>
+
+        <div class="right-container">
+          <v-form>
+            <v-container>
+              <v-layout row wrap>
+
+                <v-flex xs12 sm6 md3>
+                  <v-text-field
+                    label="amp"
+                    placeholder="Placeholder"
+                    value="10000"
+                    outline
+                  ></v-text-field>
+                </v-flex>
 
 
-        <radial-menu
-              style="background-color: white"
-              :itemSize="50"
-              :radius="120"
-              :angle-restriction="180">
-                <radial-menu-item 
-                  v-for="(item, index) in items" 
-                  :key="index" 
-                  style="background-color: white" 
-                  v-on:click="handleClick(item, $event)">
-                  <span>{{item}}</span>
-                </radial-menu-item>
-        </radial-menu>
-        <div style="color: rgba(0,0,0,0.6); margin-top: 16px;">{{ lastClicked }}</div>
+                <v-flex xs12 sm6 md3>
+                  <v-text-field
+                    label="freq"
+                    placeholder="4400"
+                    box
+                  ></v-text-field>
+                </v-flex>
+
+              </v-layout>
+            </v-container>
+          </v-form>
+       </div>
     </div>
+
+
 </template>
 
 <style>
@@ -31,10 +59,20 @@
 
     .linen-container {
       height: 100vh;
-      background-color: white;
+      /* background-color: white; */
       position: absolute;
       left: 150px;
       top: 0px;
+      z-index: 10;
+    }
+
+    .right-container {
+      background-color: white;
+      width:600px;
+      height: 300px;
+      right: 30px;
+      position: absolute;
+      z-index: 5;
     }
 
     svg {
