@@ -150,8 +150,13 @@ export class Oscil {
             .attr('style', 'stroke:black;stroke-width:3');
         g.append('svg:text')
           .attr('x', -45)
-          .attr('y', -45)
+          .attr('y', -65)
           .text((d) => 'amp');
+        g.append('svg:text')
+          .attr('x', -45)
+          .attr('y', -45)
+          .attr('class', 'nodevalue')
+          .text((d) => '10000');
 
         g.append('svg:line')
             .attr('x1', '30')
@@ -161,8 +166,13 @@ export class Oscil {
             .attr('style', 'stroke:black;stroke-width:3');
         g.append('svg:text')
           .attr('x', 20)
-          .attr('y', -45)
+          .attr('y', -65)
           .text((d) => 'freq');
+        g.append('svg:text')
+          .attr('x', 20)
+          .attr('y', -45)
+          .attr('class', 'nodevalue')
+          .text((d) => '440');
 
         var elem = halfcircle(0, 0, 50).style('opacity', 1.0);
         // elem.call(drag);

@@ -222,7 +222,7 @@ export class Layout {
       this.svg.classed('active', true);
       this.log('mousedown');
 
-      if (d3.event.ctrlKey || this.mousedownNode || this.mousedownLink) return;
+      if ((d3.event && d3.event.ctrlKey) || this.mousedownNode || this.mousedownLink) return;
       this.log('after this ctrlkey');
 
       // insert new node at point

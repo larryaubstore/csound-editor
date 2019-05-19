@@ -2,6 +2,16 @@
     <div>
         <div class="linen-container">
 
+        </div>
+
+        <div class="right-container">
+
+            
+            <v-btn color="blue" 
+                   v-on:click="selectNode()"
+                   active-class="pushed_button"
+                   id="oscil_btn">OSCIL</v-btn>
+              
             <radial-menu
                   style="background-color: white"
                   :itemSize="50"
@@ -15,35 +25,9 @@
                       <span>{{item}}</span>
                     </radial-menu-item>
             </radial-menu>
+
+ 
         </div>
-
-        <div class="right-container">
-          <v-form>
-            <v-container>
-              <v-layout row wrap>
-
-                <v-flex xs12 sm6 md3>
-                  <v-text-field
-                    label="amp"
-                    placeholder="Placeholder"
-                    value="10000"
-                    outline
-                  ></v-text-field>
-                </v-flex>
-
-
-                <v-flex xs12 sm6 md3>
-                  <v-text-field
-                    label="freq"
-                    placeholder="4400"
-                    box
-                  ></v-text-field>
-                </v-flex>
-
-              </v-layout>
-            </v-container>
-          </v-form>
-       </div>
     </div>
 
 
@@ -138,12 +122,23 @@
 
     .vue-radial-menu-wrapper {
         position: absolute;
-        top: 400px;
-        right: 40px;
+        top: 150px;
+        right: 300px;
+    }
+
+    #oscil_btn {
+        position: absolute;
+        top: 250px;
+        left: 225px;
+ 
     }
 
     .selected {
         fill: red !important;
+    }
+
+    .nodevalue {
+        font-weight: bold;
     }
 </style>
 
@@ -152,6 +147,8 @@
 import { Layout }                       from './layout';
 import { RadialMenu,  RadialMenuItem }  from 'vue-radial-menu';
 import { Oscil }                        from './d3Component/oscil';
+import * as d3      from 'd3';
+import 'vuetify/dist/vuetify.min.css';
 
 export default {
 
@@ -167,21 +164,38 @@ export default {
     data: function () {
         return {
             sliderValue: 50,
-            items: ['oscil', 'fosil', 'linen', 'echo' ],
+            items: [ 
+                 'oscil',
+                 'fosil', 
+                 'linen', 
+                 'echo',
+                 'buzz',
+                 'grain',
+                 'expon',
+                 'linseg'
+            ],
             lastClicked: '',
             layout: null
         };
     },
     methods: {
       handleClick (item, event) {
+        // document.getElementById('oscil_btn').className = 'v-btn theme--light red';
+        document.getElementById('oscil_btn').innerText = item;
         switch(item) {
             case 'oscil':
+                // insert new node at point
+                const point = [event.x - 150, event.y - 50];
                 var oscil = new Oscil();
-
-                this.layout.mousedown(event);
+                oscil.addCircle(this.layout, point);
+                this.layout.restart();
+                //this.layout.mousedown(event);
                 break;
         }
         // this.lastClicked = item;
+      },
+      selectNode() {
+          document.getElementById('oscil_btn').className = 'v-btn theme--light red';
       }
     },
     watch: {
