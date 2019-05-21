@@ -1,17 +1,10 @@
 <template>
     <div>
-        <div class="linen-container">
 
-        </div>
+
+        <div class="linen-container"></div>
 
         <div class="right-container">
-
-            
-            <v-btn color="blue" 
-                   v-on:click="selectNode()"
-                   active-class="pushed_button"
-                   id="oscil_btn">OSCIL</v-btn>
-              
             <radial-menu
                   style="background-color: white"
                   :itemSize="50"
@@ -26,6 +19,17 @@
                     </radial-menu-item>
             </radial-menu>
 
+            <div id="btn_label" class="node-selected">OSCIL</div>
+        </div>
+
+        <div class="details-container">
+            <label for="famp">amp</label>
+            <br/>
+            <input type="text" id="famp" name="amp" class="inputcustom" placeholder="10000">
+            <br/>
+            <label for="ffreq">freq</label>
+            <br/>
+            <input type="text" id="ffreq" name="freq" class="inputcustom" placeholder="440">
  
         </div>
     </div>
@@ -42,22 +46,34 @@
     }
 
     .linen-container {
-      height: 100vh;
-      /* background-color: white; */
-      position: absolute;
-      left: 150px;
-      top: 0px;
+      height: 500px;
+      background-color: white; 
+      float: left;
       z-index: 10;
+      width: 960px;
+      margin: 20px;
     }
 
     .right-container {
       background-color: white;
-      width:600px;
+      width:300px;
       height: 300px;
-      right: 30px;
-      position: absolute;
+      float: left;
       z-index: 5;
+      margin: 20px;
     }
+
+    .details-container {
+      background-color: white;
+      width:300px;
+      height: 300px;
+      float: left;
+      z-index: 5;
+      margin: 20px;
+    }
+
+
+
 
     svg {
       background-color: #FFF;
@@ -120,25 +136,49 @@
       fill: #f00 !important;
     }
 
-    .vue-radial-menu-wrapper {
-        position: absolute;
-        top: 150px;
-        right: 300px;
-    }
-
-    #oscil_btn {
-        position: absolute;
-        top: 250px;
-        left: 225px;
- 
-    }
-
     .selected {
         fill: red !important;
     }
 
     .nodevalue {
         font-weight: bold;
+    }
+
+
+    .vue-grid-item {
+        border: 1px solid black;
+    }
+
+    .node-selected {
+        position: relative;
+        top: 135px;
+        left: 125px;
+    }
+    
+    .vue-radial-menu-wrapper {
+        position: relative;
+        top: 125px;
+        left: 125px;
+    }
+
+    .inputcustom {
+        width: 50%;
+        margin-left: 20px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        box-shadow: inset 0 1px 3px #ddd;
+        border-radius: 4px;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+
+    label {
+        margin-left: 20px;
     }
 </style>
 
@@ -148,14 +188,16 @@ import { Layout }                       from './layout';
 import { RadialMenu,  RadialMenuItem }  from 'vue-radial-menu';
 import { Oscil }                        from './d3Component/oscil';
 import * as d3      from 'd3';
-import 'vuetify/dist/vuetify.min.css';
+import VueGridLayout from 'vue-grid-layout';
 
 export default {
 
     name: 'Editor',
     components: {
         RadialMenu,
-        RadialMenuItem
+        RadialMenuItem,
+        GridLayout: VueGridLayout.GridLayout,
+        GridItem: VueGridLayout.GridItem
     },
     mounted: function () {
         this.layout = new Layout();
@@ -175,13 +217,16 @@ export default {
                  'linseg'
             ],
             lastClicked: '',
-            layout: null
+            layout: null,
+            viewLayout: [
+                {"x":0,"y":0,"w":96,"h":50,"i":"0"},
+                {"x":0,"y":50,"w":96,"h":25,"i":"1"}
+                ]
         };
     },
     methods: {
       handleClick (item, event) {
-        // document.getElementById('oscil_btn').className = 'v-btn theme--light red';
-        document.getElementById('oscil_btn').innerText = item;
+        document.getElementById('btn_label').innerText = item.toUpperCase();
         switch(item) {
             case 'oscil':
                 // insert new node at point
