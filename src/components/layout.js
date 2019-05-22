@@ -29,6 +29,10 @@ export class Layout {
         this.selectedComponent = null;
     }
 
+    getEditor() {
+        return this.editor;
+    }
+
     resetMouseVars() {
         this.log('resetMouseVars');
         this.mousedownNode = null;

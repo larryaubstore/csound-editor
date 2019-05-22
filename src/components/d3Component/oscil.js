@@ -156,7 +156,7 @@ export class Oscil {
           .attr('x', -45)
           .attr('y', -45)
           .attr('class', 'nodevalue')
-          .text((d) => '10000');
+          .text((d) => layout.getEditor().inputAmp);
 
         g.append('svg:line')
             .attr('x1', '30')
@@ -172,7 +172,7 @@ export class Oscil {
           .attr('x', 20)
           .attr('y', -45)
           .attr('class', 'nodevalue')
-          .text((d) => '440');
+          .text((d) => layout.getEditor().inputFreq);
 
         var elem = halfcircle(0, 0, 50).style('opacity', 1.0);
         // elem.call(drag);

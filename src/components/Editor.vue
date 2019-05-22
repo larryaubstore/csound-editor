@@ -238,10 +238,10 @@ export default {
             case 'oscil':
                 // insert new node at point
                 const point = [150, 150];
-                var oscil = new Oscil();
-                oscil.addCircle(this.layout, point);
                 this.inputAmp = 10000;
                 this.inputFreq = 440;
+                var oscil = new Oscil();
+                oscil.addCircle(this.layout, point);
                 this.layout.restart();
                 break;
         }
@@ -249,6 +249,10 @@ export default {
     },
     watch: {
         sliderValue: function(newValue, oldValue) {
+        },
+        inputAmp: function(newValue, oldValue) {
+        }, 
+        inputFreq: function(newValue, oldValue) {
         }
     }
 }
