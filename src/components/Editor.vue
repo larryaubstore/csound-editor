@@ -23,14 +23,20 @@
         </div>
 
         <div class="details-container">
-            <label for="famp">amp</label>
-            <br/>
-            <input type="text" id="famp" name="amp" class="inputcustom" placeholder="10000">
-            <br/>
-            <label for="ffreq">freq</label>
-            <br/>
-            <input type="text" id="ffreq" name="freq" class="inputcustom" placeholder="440">
- 
+
+            <template v-if="inputAmp">
+                <label for="famp">amp</label>
+                <br/>
+                <input type="text" id="famp" name="amp" v-model="inputAmp" class="inputcustom" placeholder="10000">
+                <br/>
+            </template>
+
+            <template v-if="inputFreq">
+                <label for="ffreq">freq</label>
+                <br/>
+                <input type="text" id="ffreq" name="freq" v-model="inputFreq" class="inputcustom" placeholder="440">
+            </template>
+     
         </div>
     </div>
 
@@ -71,9 +77,6 @@
       z-index: 5;
       margin: 20px;
     }
-
-
-
 
     svg {
       background-color: #FFF;
@@ -200,7 +203,7 @@ export default {
         GridItem: VueGridLayout.GridItem
     },
     mounted: function () {
-        this.layout = new Layout();
+        this.layout = new Layout(this);
         this.layout.draw();
     },
     data: function () {
@@ -218,29 +221,30 @@ export default {
             ],
             lastClicked: '',
             layout: null,
-            viewLayout: [
-                {"x":0,"y":0,"w":96,"h":50,"i":"0"},
-                {"x":0,"y":50,"w":96,"h":25,"i":"1"}
-                ]
+            inputAmp: '',
+            inputFreq: ''
         };
     },
     methods: {
+
+      resetInputZone() {
+        this.inputAmp = '';
+        this.inputFreq = '';
+      }, 
       handleClick (item, event) {
+        this.resetInputZone();
         document.getElementById('btn_label').innerText = item.toUpperCase();
         switch(item) {
             case 'oscil':
                 // insert new node at point
-                const point = [event.x - 150, event.y - 50];
+                const point = [150, 150];
                 var oscil = new Oscil();
                 oscil.addCircle(this.layout, point);
+                this.inputAmp = 10000;
+                this.inputFreq = 440;
                 this.layout.restart();
-                //this.layout.mousedown(event);
                 break;
         }
-        // this.lastClicked = item;
-      },
-      selectNode() {
-          document.getElementById('oscil_btn').className = 'v-btn theme--light red';
       }
     },
     watch: {

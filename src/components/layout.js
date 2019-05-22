@@ -5,7 +5,8 @@ import * as debug   from 'debug';
 import * as _       from 'lodash';
 
 export class Layout {
-    constructor() {
+    constructor(editor) {
+        this.editor = editor;
         this.oscil = null;
         this.fixedCircle = null;
         this.log = debug('layout');
@@ -274,7 +275,6 @@ export class Layout {
       if (!this.selectedNode && !this.selectedLink && !this.selectedComponent) return;
 
       switch (d3.event.keyCode) {
-        case 8: // backspace
         case 46: // delete
           if (this.selectedLink) {
             this.links.splice(this.links.indexOf(this.selectedLink), 1);
