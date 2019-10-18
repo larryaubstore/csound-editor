@@ -1,6 +1,7 @@
 /* eslint-disable indent,no-multiple-empty-lines,no-undef,no-unused-vars,space-infix-ops,comma-spacing,no-trailing-spaces,object-property-newline */
 import * as d3      from 'd3';
 import { Oscil }    from './d3Component/oscil';
+import { Buzz }      from './d3Component/buzz';
 import * as debug   from 'debug';
 import * as _       from 'lodash';
 
@@ -8,6 +9,7 @@ export class Layout {
     constructor(editor) {
         this.editor = editor;
         this.oscil = null;
+        this.buzz = null;
         this.fixedCircle = null;
         this.log = debug('layout');
         this.path = null;
@@ -178,14 +180,22 @@ export class Layout {
  
 
         this.oscil = new Oscil();
+        this.buzz = new Buzz();
+
         this.fixedCircle = g.filter(function (d) {
-            return !d.isChild;
+            return !d.isChild && d.type === 'oscil';
+        });
+
+        this.fixedCircleBuzz = g.filter(function (d) {
+            return !d.isChild && d.type === 'buzz';
         });
 
 
         this.log('FIXED CIRCLE LENGTH ******', this.fixedCircle.length);
 
         this.oscil.draw(this.fixedCircle, this.nodes, this);
+        this.buzz.draw(this.fixedCircleBuzz, this.nodes, this);
+
 
 
         this.circle = g.merge(this.circle);

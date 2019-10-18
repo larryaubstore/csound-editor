@@ -190,6 +190,8 @@
 import { Layout }                       from './layout';
 import { RadialMenu,  RadialMenuItem }  from 'vue-radial-menu';
 import { Oscil }                        from './d3Component/oscil';
+import { Buzz }                         from './d3Component/buzz';
+
 import * as d3      from 'd3';
 import VueGridLayout from 'vue-grid-layout';
 
@@ -237,12 +239,21 @@ export default {
         switch(item) {
             case 'oscil':
                 // insert new node at point
-                const point = [150, 150];
+                var point = [150, 150];
                 this.inputAmp = 10000;
                 this.inputFreq = 440;
                 var oscil = new Oscil();
                 oscil.addCircle(this.layout, point);
                 this.layout.restart();
+                break;
+            case 'buzz':
+                var point = [150, 150];
+                this.inputAmp = 10000;
+                this.inputFreq = 440;
+                var buzz = new Buzz();
+                buzz.addCircle(this.layout, point);
+                this.layout.restart();
+
                 break;
         }
       }

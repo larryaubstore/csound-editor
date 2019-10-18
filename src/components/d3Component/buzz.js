@@ -3,10 +3,11 @@ import * as d3      from 'd3';
 import * as debug   from 'debug';
 import * as _       from 'lodash';
 
-export class Oscil {
+export class Buzz {
     constructor() {
-        this.log = debug('oscil');
+        this.log = debug('buzz');
         this.drag = null;
+        this.prefix = '#buzz_';
     }
 
     addCircle(layout, point) {
@@ -48,7 +49,7 @@ export class Oscil {
         nodeCloned = JSON.parse(JSON.stringify(node));
         nodeCloned.id = layout.lastNodeId + 3;
         nodeCloned.isChild = false;
-        nodeCloned.type = 'oscil';
+        nodeCloned.type = 'buzz';
         nodeCloned.originalx = nodeCloned.originalx + 30;
         nodeCloned.fx = nodeCloned.fx + 30;
         nodeCloned.originaly = nodeCloned.originaly + 20;
@@ -71,12 +72,12 @@ export class Oscil {
           .on('drag', (d) => {
             this.log('drag');
             if (layout.selectedComponent !== null) {
-                d3.select('#oscil_' + layout.selectedComponent.id).attr('class', '');
+                d3.select(this.prefix + layout.selectedComponent.id).attr('class', '');
                 layout.selectedComponent = d;
-                d3.select('#oscil_' + layout.selectedComponent.id).attr('class', 'selected');
+                d3.select(this.prefix + layout.selectedComponent.id).attr('class', 'selected');
             } else {
                 layout.selectedComponent = d;
-                d3.select('#oscil_' + layout.selectedComponent.id).attr('class', 'selected');
+                d3.select(this.prefix + layout.selectedComponent.id).attr('class', 'selected');
             }
 
             d.fx = d3.event.x;
@@ -104,7 +105,7 @@ export class Oscil {
             return g.append('path')
             .attr('transform', 'rotate(180)')
             .attr('id', function (d) {
-                return 'oscil_' + d.id;
+                return 'buzz_' + d.id;
             })
             .attr('style', 'fill:white;stroke:black;stroke-width:3;cursor:pointer;')
             .attr('d', arc({
@@ -128,7 +129,7 @@ export class Oscil {
                     layout.selectedComponent = null;
                 } else {
                     if (layout.selectedComponent !== null) {
-                        d3.select('#oscil_' + layout.selectedComponent.id).attr('class', '');
+                        d3.select('#buzz_' + layout.selectedComponent.id).attr('class', '');
                     }
                     d3.select(this).attr('class', 'selected');
                     layout.selectedComponent = d;
@@ -184,6 +185,6 @@ export class Oscil {
           .attr('x', 0)
           .attr('y', 26)
           .attr('class', 'id')
-          .text((d) => 'OSCIL');
+          .text((d) => 'BUZZ');
     }
 }
