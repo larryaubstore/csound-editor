@@ -29,7 +29,6 @@ export class Layout {
         this.lastKeyDown = -1;
         this.drag = null;
         this.selectedComponent = null;
-        this.scale = 2;
     }
 
     getEditor() {

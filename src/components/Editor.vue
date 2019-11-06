@@ -272,6 +272,9 @@ export default {
         inputAmp: function(newValue, oldValue) {
         }, 
         inputFreq: function(newValue, oldValue) {
+        },
+        scale: function(newValue, oldValue) {
+            this.layout.restart();
         }
     }
 }
