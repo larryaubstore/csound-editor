@@ -10,7 +10,6 @@ export class Buzz {
         this.drag = null;
         this.prefix = '#buzz_';
         this.utils = new Utils();
-        this.scale = 2;
     }
 
     addCircle(layout, point) {
@@ -30,9 +29,9 @@ export class Buzz {
         nodeCloned = JSON.parse(JSON.stringify(node));
         layout.nodes.push(nodeCloned);
 
-        this.utils.addNode(layout, node, 60, 0, layout.lastNodeId + 1, this.scale);
-        this.utils.addNode(layout, node, 30, 90, layout.lastNodeId + 2, this.scale);
-        nodeCloned = this.utils.addNode(layout, node, 30, 20, layout.lastNodeId + 3, this.scale);
+        this.utils.addNode(layout, node, 60, 0, layout.lastNodeId + 1, layout.getEditor().scale);
+        this.utils.addNode(layout, node, 30, 90, layout.lastNodeId + 2, layout.getEditor().scale);
+        nodeCloned = this.utils.addNode(layout, node, 30, 20, layout.lastNodeId + 3, layout.getEditor().scale);
         nodeCloned.isChild = false;
         nodeCloned.type = 'buzz';
         nodeCloned.children =  [layout.lastNodeId, layout.lastNodeId + 1, layout.lastNodeId + 2];
@@ -43,7 +42,7 @@ export class Buzz {
     draw(container, nodes, layout) {
         this.log('draw');
         const g = container.append('svg:g')
-             .attr('transform', 'scale(' + this.scale + ')');
+             .attr('transform', 'scale(' + layout.getEditor().scale + ')');
 //             .attr('transform', 'translate(0, -30)');
 
         this.drag = d3.drag()

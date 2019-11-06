@@ -29,6 +29,7 @@ export class Layout {
         this.lastKeyDown = -1;
         this.drag = null;
         this.selectedComponent = null;
+        this.scale = 2;
     }
 
     getEditor() {
@@ -97,7 +98,7 @@ export class Layout {
           .attr('id', function (d) {
             return 'circle_' + d.id;
           })
-          .attr('r', 12)
+          .attr('r', 12 * this.editor.scale)
           .style('fill', (d) => (d === this.selectedNode) ? d3.rgb(this.colors(d.id)).brighter().toString() : this.colors(d.id))
           .style('stroke', (d) => d3.rgb(this.colors(d.id)).darker().toString())
           .style('display', (d) => {
