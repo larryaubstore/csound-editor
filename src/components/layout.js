@@ -83,7 +83,8 @@ export class Layout {
         // update existing nodes (reflexive & selected visual states)
         this.circle.selectAll('circle')
           .style('fill', (d) => (d === this.selectedNode) ? d3.rgb(this.colors(d.id)).brighter().toString() : this.colors(d.id))
-          .classed('reflexive', (d) => d.reflexive);
+          .classed('reflexive', (d) => d.reflexive)
+          .attr('r', 12 * this.editor.scale);
 
         // remove old nodes
         this.circle.exit().remove();
@@ -178,7 +179,6 @@ export class Layout {
             d.fy = null; 
           });
  
-
         this.oscil = new Oscil();
         this.buzz = new Buzz();
 
