@@ -45,6 +45,7 @@ export class Layout {
     // update graph (called when needed)
     restart() {
         this.log('restart');
+        d3.selectAll('.superg').attr('transform', 'scale(' + this.editor.scale + ')');
         // path (link) group
         this.path = this.path.data(this.links);
 
@@ -83,22 +84,18 @@ export class Layout {
         // update existing nodes (reflexive & selected visual states)
         this.circle.selectAll('circle')
           .style('fill', (d) => (d === this.selectedNode) ? d3.rgb(this.colors(d.id)).brighter().toString() : this.colors(d.id))
-          .classed('reflexive', (d) => d.reflexive)
-          .attr('r', 12 * this.editor.scale);
-
-        // remove old nodes
+          .classed('reflexive', (d) => d.reflexive);
         this.circle.exit().remove();
 
         // add new nodes
         const g = this.circle.enter().append('svg:g');
-
         var scope = this;
         g.append('svg:circle')
           .attr('class', 'node')
           .attr('id', function (d) {
             return 'circle_' + d.id;
           })
-          .attr('r', 12 * this.editor.scale)
+          .attr('r', 12)
           .style('fill', (d) => (d === this.selectedNode) ? d3.rgb(this.colors(d.id)).brighter().toString() : this.colors(d.id))
           .style('stroke', (d) => d3.rgb(this.colors(d.id)).darker().toString())
           .style('display', (d) => {
@@ -428,7 +425,11 @@ export class Layout {
 
         // handles to link and node element groups
         this.path = this.svg.append('svg:g').selectAll('path');
-        this.circle = this.svg.append('svg:g').selectAll('g');
+        this.circle = this.svg.append('svg:g')
+            .attr('class', 'superg')
+            .attr('transform', 'scale(' + this.editor.scale + ')')
+            
+            .selectAll('g');
 
         // mouse event vars
         this.selectedNode = null;

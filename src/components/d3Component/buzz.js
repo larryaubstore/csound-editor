@@ -42,8 +42,10 @@ export class Buzz {
     draw(container, nodes, layout) {
         this.log('draw');
         const g = container.append('svg:g')
-             .attr('transform', 'scale(' + layout.getEditor().scale + ')');
-//             .attr('transform', 'translate(0, -30)');
+             .attr('class', 'container_buzz')
+             .attr('id', function (d) {
+                return 'container_buzz_' + d.id;
+             });
 
         this.drag = d3.drag()
           .on('start', (d) => {
