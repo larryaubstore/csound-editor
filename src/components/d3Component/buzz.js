@@ -16,6 +16,8 @@ export class Buzz {
         this.log('addCircle');
 
         var nodeCloned = null;
+
+        // amp
         const node = { id: ++layout.lastNodeId,
                      reflexive: false,
                      isChild: true,
@@ -26,16 +28,20 @@ export class Buzz {
                      originalx: point[0],
                      originaly: point[1]
                     };
-        nodeCloned = JSON.parse(JSON.stringify(node));
-        layout.nodes.push(nodeCloned);
+        // freq
+        this.utils.addNode(layout, node, 30, -23, layout.lastNodeId);
 
-        this.utils.addNode(layout, node, 60, 0, layout.lastNodeId + 1, layout.getEditor().scale);
-        this.utils.addNode(layout, node, 30, 90, layout.lastNodeId + 2, layout.getEditor().scale);
-        nodeCloned = this.utils.addNode(layout, node, 30, 20, layout.lastNodeId + 3, layout.getEditor().scale);
+        // amp
+        this.utils.addNode(layout, node, -20, -23, layout.lastNodeId + 1);
+
+        // fn
+        this.utils.addNode(layout, node, -50, -23, layout.lastNodeId + 2);
+
+        nodeCloned = this.utils.addNode(layout, node, 0, 0, layout.lastNodeId + 3);
         nodeCloned.isChild = false;
         nodeCloned.type = 'buzz';
         nodeCloned.children =  [layout.lastNodeId, layout.lastNodeId + 1, layout.lastNodeId + 2];
-        layout.lastNodeId = layout.lastNodeId + 3;
+        layout.lastNodeId = layout.lastNodeId + 4;
         nodeCloned.master = layout.lastNodeId;
     }
 
@@ -123,18 +129,25 @@ export class Buzz {
             .attr('y2', '60')
             .attr('style', 'stroke:black;stroke-width:3');
 
-        var amp = g.append('svg:line')
-            .attr('x1', '-30')
+        var fn = g.append('svg:line')
+            .attr('x1', '-50')
             .attr('y1', '0')
-            .attr('x2', '-30')
+            .attr('x2', '-50')
+            .attr('y2', '-10')
+            .attr('style', 'stroke:black;stroke-width:3');
+
+        var amp = g.append('svg:line')
+            .attr('x1', '-20')
+            .attr('y1', '0')
+            .attr('x2', '-20')
             .attr('y2', '-10')
             .attr('style', 'stroke:black;stroke-width:3');
         g.append('svg:text')
-          .attr('x', -45)
+          .attr('x', -35)
           .attr('y', -65)
           .text((d) => 'amp');
         g.append('svg:text')
-          .attr('x', -45)
+          .attr('x', -35)
           .attr('y', -45)
           .attr('class', 'nodevalue')
           .text((d) => layout.getEditor().inputAmp);
