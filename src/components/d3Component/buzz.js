@@ -2,18 +2,22 @@
 import * as d3      from 'd3';
 import * as debug   from 'debug';
 import * as _       from 'lodash';
+import { Utils }    from '../../utils';
 
 export class Buzz {
     constructor() {
         this.log = debug('buzz');
         this.drag = null;
         this.prefix = '#buzz_';
+        this.utils = new Utils();
     }
 
     addCircle(layout, point) {
         this.log('addCircle');
 
         var nodeCloned = null;
+
+        // amp
         const node = { id: ++layout.lastNodeId,
                      reflexive: false,
                      isChild: true,
@@ -24,47 +28,36 @@ export class Buzz {
                      originalx: point[0],
                      originaly: point[1]
                     };
-        nodeCloned = JSON.parse(JSON.stringify(node));
-        layout.nodes.push(nodeCloned);
+        // freq
+        this.utils.addNode(layout, node, 30, -23, layout.lastNodeId);
 
-        nodeCloned = JSON.parse(JSON.stringify(node));
-        nodeCloned.id = layout.lastNodeId + 1;
-        nodeCloned.isChild = true;
-        nodeCloned.originalx = nodeCloned.originalx + 60;
-        nodeCloned.fx = nodeCloned.fx + 60;
-        nodeCloned.originaly = nodeCloned.originaly - 0;
-        nodeCloned.fy = nodeCloned.fy - 0;
-        layout.nodes.push(nodeCloned);
+        // amp
+        this.utils.addNode(layout, node, -20, -23, layout.lastNodeId + 1);
 
-        nodeCloned = JSON.parse(JSON.stringify(node));
-        nodeCloned.id = layout.lastNodeId + 2;
-        nodeCloned.isChild = true;
-        nodeCloned.originalx = nodeCloned.originalx + 30;
-        nodeCloned.fx = nodeCloned.fx + 30;
-        nodeCloned.originaly = nodeCloned.originaly + 90;
-        nodeCloned.fy = nodeCloned.fy + 90;
-        layout.nodes.push(nodeCloned);
+        // fn
+        this.utils.addNode(layout, node, -50, -23, layout.lastNodeId + 2);
 
-        /***********************/
-        nodeCloned = JSON.parse(JSON.stringify(node));
-        nodeCloned.id = layout.lastNodeId + 3;
+        // out
+        this.utils.addNode(layout, node, 0, 73, layout.lastNodeId + 3);
+
+        nodeCloned = this.utils.addNode(layout, node, 0, 0, layout.lastNodeId + 4);
         nodeCloned.isChild = false;
         nodeCloned.type = 'buzz';
-        nodeCloned.originalx = nodeCloned.originalx + 30;
-        nodeCloned.fx = nodeCloned.fx + 30;
-        nodeCloned.originaly = nodeCloned.originaly + 20;
-        nodeCloned.fy = nodeCloned.fy + 20;
-        nodeCloned.children =  [layout.lastNodeId, layout.lastNodeId + 1, layout.lastNodeId + 2];
-        layout.nodes.push(nodeCloned);
-
-        layout.lastNodeId = layout.lastNodeId + 3;
+        nodeCloned.children =  [layout.lastNodeId,
+                                layout.lastNodeId + 1,
+                                layout.lastNodeId + 2,
+                                layout.lastNodeId + 3];
+        layout.lastNodeId = layout.lastNodeId + 5;
         nodeCloned.master = layout.lastNodeId;
     }
 
     draw(container, nodes, layout) {
         this.log('draw');
         const g = container.append('svg:g')
-//             .attr('transform', 'translate(0, -30)');
+             .attr('class', 'container_buzz')
+             .attr('id', function (d) {
+                return 'container_buzz_' + d.id;
+             });
 
         this.drag = d3.drag()
           .on('start', (d) => {
@@ -102,18 +95,16 @@ export class Buzz {
 
         var halfcircle = function(x, y, rad) {
             var arc = d3.arc();
-            return g.append('path')
-            .attr('transform', 'rotate(180)')
+            return g.append('rect')
+            .attr('transform', 'translate(-80, -10)')
             .attr('id', function (d) {
                 return 'buzz_' + d.id;
             })
             .attr('style', 'fill:white;stroke:black;stroke-width:3;cursor:pointer;')
-            .attr('d', arc({
-                innerRadius: 0,
-                outerRadius: rad,
-                startAngle: -Math.PI * 0.5,
-                endAngle: Math.PI * 0.5
-            }))
+            .attr('x', 10)
+            .attr('y', 10)
+            .attr('width', 140)
+            .attr('height', 50)
             .on('mouseover', function (d) {
                 // enlarge target node
                 // d3.select(this).attr('transform', 'scale(1.1) rotate(180)');
@@ -137,30 +128,37 @@ export class Buzz {
             });
        };
 
-        g.append('svg:line')
+        var out = g.append('svg:line')
             .attr('x1', '0')
             .attr('y1', '50')
             .attr('x2', '0')
             .attr('y2', '60')
             .attr('style', 'stroke:black;stroke-width:3');
 
-        g.append('svg:line')
-            .attr('x1', '-30')
+        var fn = g.append('svg:line')
+            .attr('x1', '-50')
             .attr('y1', '0')
-            .attr('x2', '-30')
+            .attr('x2', '-50')
+            .attr('y2', '-10')
+            .attr('style', 'stroke:black;stroke-width:3');
+
+        var amp = g.append('svg:line')
+            .attr('x1', '-20')
+            .attr('y1', '0')
+            .attr('x2', '-20')
             .attr('y2', '-10')
             .attr('style', 'stroke:black;stroke-width:3');
         g.append('svg:text')
-          .attr('x', -45)
+          .attr('x', -35)
           .attr('y', -65)
           .text((d) => 'amp');
         g.append('svg:text')
-          .attr('x', -45)
+          .attr('x', -35)
           .attr('y', -45)
           .attr('class', 'nodevalue')
           .text((d) => layout.getEditor().inputAmp);
 
-        g.append('svg:line')
+        var freq = g.append('svg:line')
             .attr('x1', '30')
             .attr('y1', '0')
             .attr('x2', '30')
@@ -175,6 +173,15 @@ export class Buzz {
           .attr('y', -45)
           .attr('class', 'nodevalue')
           .text((d) => layout.getEditor().inputFreq);
+
+        var knh = g.append('svg:line')
+          .attr('x1', '60')
+          .attr('y1', '0')
+          .attr('x2', '60')
+          .attr('y2', '-10')
+          .attr('style', 'stroke:black;stroke-width:9');
+
+        //  total number of harmonics requested
 
         var elem = halfcircle(0, 0, 50).style('opacity', 1.0);
         // elem.call(drag);

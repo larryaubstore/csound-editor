@@ -38,6 +38,11 @@
             </template>
      
         </div>
+
+
+        <div class="details-container">
+            <slider min="1" max="5" step="1" v-model="scale" />
+        </div>
     </div>
 
 
@@ -194,6 +199,8 @@ import { Buzz }                         from './d3Component/buzz';
 
 import * as d3      from 'd3';
 import VueGridLayout from 'vue-grid-layout';
+import Slider from 'vue-custom-range-slider'
+import 'vue-custom-range-slider/dist/vue-custom-range-slider.css';
 
 export default {
 
@@ -202,7 +209,8 @@ export default {
         RadialMenu,
         RadialMenuItem,
         GridLayout: VueGridLayout.GridLayout,
-        GridItem: VueGridLayout.GridItem
+        GridItem: VueGridLayout.GridItem,
+        Slider
     },
     mounted: function () {
         this.layout = new Layout(this);
@@ -210,7 +218,6 @@ export default {
     },
     data: function () {
         return {
-            sliderValue: 50,
             items: [ 
                  'oscil',
                  'fosil', 
@@ -224,7 +231,8 @@ export default {
             lastClicked: '',
             layout: null,
             inputAmp: '',
-            inputFreq: ''
+            inputFreq: '',
+            scale: '2'
         };
     },
     methods: {
@@ -264,6 +272,9 @@ export default {
         inputAmp: function(newValue, oldValue) {
         }, 
         inputFreq: function(newValue, oldValue) {
+        },
+        scale: function(newValue, oldValue) {
+            this.layout.restart();
         }
     }
 }

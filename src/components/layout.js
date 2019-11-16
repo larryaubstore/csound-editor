@@ -45,6 +45,7 @@ export class Layout {
     // update graph (called when needed)
     restart() {
         this.log('restart');
+        d3.selectAll('.superg').attr('transform', 'scale(' + this.editor.scale + ')');
         // path (link) group
         this.path = this.path.data(this.links);
 
@@ -58,6 +59,7 @@ export class Layout {
 
         // add new links
         this.path = this.path.enter().append('svg:path')
+          .attr('transform', 'scale(' + this.editor.scale + ')')
           .attr('class', 'link')
           .classed('selected', (d) => d === this.selectedLink)
           .style('marker-start', (d) => d.left ? 'url(#start-arrow)' : '')
@@ -84,13 +86,10 @@ export class Layout {
         this.circle.selectAll('circle')
           .style('fill', (d) => (d === this.selectedNode) ? d3.rgb(this.colors(d.id)).brighter().toString() : this.colors(d.id))
           .classed('reflexive', (d) => d.reflexive);
-
-        // remove old nodes
         this.circle.exit().remove();
 
         // add new nodes
         const g = this.circle.enter().append('svg:g');
-
         var scope = this;
         g.append('svg:circle')
           .attr('class', 'node')
@@ -131,7 +130,7 @@ export class Layout {
             scope.dragLine
               .style('marker-end', 'url(#end-arrow)')
               .classed('hidden', false)
-              .attr('d', `M${scope.mousedownNode.x},${scope.mousedownNode.y}L${scope.mousedownNode.x},${scope.mousedownNode.y}`);
+              .attr('d', `M${scope.mousedownNode.x * scope.editor.scale},${scope.mousedownNode.y * scope.editor.scale}L${scope.mousedownNode.x * scope.editor.scale},${scope.mousedownNode.y * scope.editor.scale}`);
 
             scope.restart();
           })
@@ -178,7 +177,6 @@ export class Layout {
             d.fy = null; 
           });
  
-
         this.oscil = new Oscil();
         this.buzz = new Buzz();
 
@@ -225,7 +223,8 @@ export class Layout {
         const targetY = d.target.y - (targetPadding * normY);
 
         return `M${sourceX},${sourceY}L${targetX},${targetY}`;
-      });
+      }).attr('transform', 'scale(' + this.editor.scale +  ')');
+        
 
       this.circle.attr('transform', (d) => {
         return `translate(${d.x},${d.y})`;
@@ -251,7 +250,9 @@ export class Layout {
       if (!this.mousedownNode) return;
 
       // update drag line
-      this.dragLine.attr('d', `M${this.mousedownNode.x},${this.mousedownNode.y}L${d3.mouse(event)[0]},${d3.mouse(event)[1]}`);
+      this.dragLine
+            .attr('d', `M${this.mousedownNode.x * this.editor.scale},${this.mousedownNode.y * this.editor.scale}L${d3.mouse(event)[0]},${d3.mouse(event)[1]}`)
+            .style('stroke-width', 4 * this.editor.scale + 'px');
 
       this.restart();
     }
@@ -261,6 +262,7 @@ export class Layout {
         // hide drag line
         this.dragLine
           .classed('hidden', true)
+          .style('stroke-width', '0px')
           .style('marker-end', '');
       }
 
@@ -428,7 +430,11 @@ export class Layout {
 
         // handles to link and node element groups
         this.path = this.svg.append('svg:g').selectAll('path');
-        this.circle = this.svg.append('svg:g').selectAll('g');
+        this.circle = this.svg.append('svg:g')
+            .attr('class', 'superg')
+            .attr('transform', 'scale(' + this.editor.scale + ')')
+            
+            .selectAll('g');
 
         // mouse event vars
         this.selectedNode = null;
