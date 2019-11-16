@@ -111,6 +111,10 @@ export class Buzz {
             })
             .on('click', function (d) {
                 var classAttr = d3.select(this).attr('class');
+
+                // On désélectionne tous les composants
+                d3.selectAll('.selected').attr('class', '');
+
                 if (classAttr === 'selected') {
                     d3.select(this).attr('class', '');
                     layout.selectedComponent = null;
