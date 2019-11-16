@@ -47,17 +47,13 @@ export class Buzz {
                                 layout.lastNodeId + 1,
                                 layout.lastNodeId + 2,
                                 layout.lastNodeId + 3];
-        layout.lastNodeId = layout.lastNodeId + 5;
+        layout.lastNodeId = layout.lastNodeId + 4;
         nodeCloned.master = layout.lastNodeId;
     }
 
     draw(container, nodes, layout) {
         this.log('draw');
-        const g = container.append('svg:g')
-             .attr('class', 'container_buzz')
-             .attr('id', function (d) {
-                return 'container_buzz_' + d.id;
-             });
+        const g = container.append('svg:g');
 
         this.drag = d3.drag()
           .on('start', (d) => {
@@ -173,15 +169,6 @@ export class Buzz {
           .attr('y', -45)
           .attr('class', 'nodevalue')
           .text((d) => layout.getEditor().inputFreq);
-
-        var knh = g.append('svg:line')
-          .attr('x1', '60')
-          .attr('y1', '0')
-          .attr('x2', '60')
-          .attr('y2', '-10')
-          .attr('style', 'stroke:black;stroke-width:9');
-
-        //  total number of harmonics requested
 
         var elem = halfcircle(0, 0, 50).style('opacity', 1.0);
         // elem.call(drag);
