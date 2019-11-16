@@ -40,7 +40,7 @@
         </div>
 
 
-        <div class="details-container">
+        <div class="zoom-container">
             <slider min="1" max="5" step="1" v-model="scale" />
         </div>
     </div>
@@ -54,6 +54,7 @@
       margin-top: 0px;
       margin-left: 0px;
       background-color: #ffedd6;
+      overflow: hidden;
     }
 
     .linen-container {
@@ -69,18 +70,34 @@
       background-color: white;
       width:300px;
       height: 300px;
-      float: left;
       z-index: 5;
       margin: 20px;
+      position: absolute;
+      right: 10px;
+      bottom: 150px;
     }
 
     .details-container {
       background-color: white;
       width:300px;
       height: 300px;
-      float: left;
       z-index: 5;
       margin: 20px;
+      position: absolute;
+      right: 10px;
+      top: 10px;
+    }
+
+    .zoom-container {
+      background-color: white;
+      width:300px;
+      height: 100px;
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      z-index: 5;
+      margin: 20px;
+ 
     }
 
     svg {
@@ -215,6 +232,10 @@ export default {
     mounted: function () {
         this.layout = new Layout(this);
         this.layout.draw();
+
+        window.onresize = function () {
+            this.layout.resize();
+        }.bind(this);
     },
     data: function () {
         return {

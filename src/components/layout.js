@@ -1,7 +1,7 @@
 /* eslint-disable indent,no-multiple-empty-lines,no-undef,no-unused-vars,space-infix-ops,comma-spacing,no-trailing-spaces,object-property-newline */
 import * as d3      from 'd3';
 import { Oscil }    from './d3Component/oscil';
-import { Buzz }      from './d3Component/buzz';
+import { Buzz }     from './d3Component/buzz';
 import * as debug   from 'debug';
 import * as _       from 'lodash';
 
@@ -240,9 +240,6 @@ export class Layout {
       this.log('after this ctrlkey');
 
       // insert new node at point
-      const point = d3.mouse(event);
-      var oscil = new Oscil();
-      oscil.addCircle(this, point);
       this.restart();
     }
 
@@ -347,17 +344,36 @@ export class Layout {
       }
     }
 
+    resize() {
+        // set up SVG for D3
+        const width = window.innerWidth - 500;
+        const height = window.innerHeight - 50;
+
+        console.log('width', width);
+        console.log('height', height);
+
+        d3.select('.bigsvg')
+          .attr('width', width)
+          .attr('height', height);
+    }
+
     draw() {
         // set up SVG for D3
-        const width = 960;
-        const height = 500;
+        const width = window.innerWidth - 500;
+        const height = window.innerHeight - 50;
+
+
+
         this.colors = d3.scaleOrdinal(d3.schemeCategory10);
 
         this.svg = d3.select('.linen-container')
           .append('svg')
           .attr('oncontextmenu', 'return false;')
           .attr('width', width)
-          .attr('height', height);
+          .attr('height', height)
+          .attr('class', 'bigsvg');
+
+
 
         // set up initial nodes and links
         //  - nodes are known by 'id', not by index in array.
@@ -369,8 +385,6 @@ export class Layout {
         this.nodes = [];
 
 
-        /// var oscil = new Oscil();
-        /// oscil.addCircle(this, [550, 225]); 
         // init D3 force layout
         this.force = d3.forceSimulation()
           .force('link', d3.forceLink().id((d) => d.id).distance(150))
